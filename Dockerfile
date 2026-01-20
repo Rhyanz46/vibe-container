@@ -52,7 +52,15 @@ RUN apt-get update && apt-get install -y \
     librsvg2-2 \
     libu2f-udev \
     libvulkan1 \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-full \
     && rm -rf /var/lib/apt/lists/*
+
+# Note: pip is already installed via python3-pip (version 24.0)
+# Skipping upgrade to avoid Debian package management issues
+# pip 24.0 is sufficient for most use cases
 
 # Install Golang 1.23
 RUN wget https://go.dev/dl/go1.23.5.linux-amd64.tar.gz && \
@@ -159,6 +167,8 @@ RUN echo '# Source global definitions' >> /home/claude/.bashrc && \
     echo 'echo "==============================="' >> /home/claude/.bashrc && \
     echo 'echo "Go: $(go version 2>/dev/null | awk '"'"'{print $3}'"'"')"' >> /home/claude/.bashrc && \
     echo 'echo "Node.js: $(node --version 2>/dev/null) (Default: $(nvm version 2>/dev/null))"' >> /home/claude/.bashrc && \
+    echo 'echo "Python: $(python3 --version 2>/dev/null)"' >> /home/claude/.bashrc && \
+    echo 'echo "pip: $(python3 -m pip --version 2>/dev/null)"' >> /home/claude/.bashrc && \
     echo 'echo "Available: $(nvm version 2>/dev/null | tr " " "\\n" | grep -v "N/A" | sort -u | tr "\\n" " ")"' >> /home/claude/.bashrc && \
     echo 'echo "npm: $(npm --version 2>/dev/null)"' >> /home/claude/.bashrc && \
     echo 'echo "nginx: $(nginx -v 2>&1 || echo \"installed\")"' >> /home/claude/.bashrc && \
@@ -303,6 +313,8 @@ RUN echo "=== Environment Information ===" && \
     echo "NVM: $(. $NVM_DIR/nvm.sh && nvm --version)" && \
     echo "NVM Installed Versions: $(. $NVM_DIR/nvm.sh && nvm ls | grep -E 'v20|v22|v25' | tr '\n' ' ')" && \
     echo "Golang: $(go version)" && \
+    echo "Python: $(python3 --version)" && \
+    echo "pip: $(python3 -m pip --version)" && \
     echo "ripgrep: $(rg --version | head -n1)" && \
     echo "Claude Code: $(claude --version 2>/dev/null || echo 'Installation complete')" && \
     echo "Go tools: $(ls ~/go/bin/ 2>/dev/null | xargs || echo 'None installed')" && \
