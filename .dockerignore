@@ -1,0 +1,103 @@
+# .dockerignore - Files to exclude from Docker build context (2026 edition)
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Node modules (if any)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Package manager files (keep package.json/yarn.lock if needed)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-*
+.vs/
+
+# Build artifacts
+dist/
+build/
+out/
+*.log
+*.tgz
+
+# Documentation files (optional - keep README.md)
+*.md
+!README.md
+
+# Docker files (don't include docker files in the image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+.docker
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Test files
+coverage/
+.nyc_output/
+*.test.js
+*.spec.js
+__tests__/
+test/
+tests/
+
+# OS files
+Thumbs.db
+.DS_Store
+.Trash-*
+.nfs*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/
+
+# Security & secrets (IMPORTANT)
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+secrets/
+credentials/
+*.credentials
+
+# Claude Code specific (don't mount these into container)
+.claude/
+.mcp.json
+.claude.json
+
+# Logs
+logs/
+*.log
+
+# Misc
+*.bak
+*.backup
+*.old
+*.orig
+data/
+.env

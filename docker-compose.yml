@@ -1,0 +1,120 @@
+# Docker Compose configuration for Claude Code (2026 edition)
+# Optimized for Ubuntu 24.04 LTS and modern Docker features
+
+services:
+  claude-code:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Build arguments for customization
+      args:
+        - UBUNTU_VERSION=24.04
+        - NODE_VERSION=20
+    container_name: claude-code-container
+    image: claude-code:2026.1
+    # Use restart policy for better resilience
+    restart: unless-stopped
+
+    # ===== SECURITY: Run as non-root user =====
+    # Container runs as 'claude' user (UID 1001) instead of root
+    # This improves security by following the principle of least privilege
+    user: "1001:1001"
+
+    # Mount your project directory into the container
+    volumes:
+      # Mount current directory to /workspace
+      - .:/workspace
+
+      # ===== CLAUDE CODE DATA IN CURRENT DIRECTORY =====
+      # All data stored in subdirectories next to docker-compose.yml
+
+      # Main Claude Code configuration (includes API keys, settings)
+      - ./data/.claude:/home/claude/.claude
+
+      # Claude Code data cache (models, conversations, etc)
+      - ./data/.local/share/claude:/home/claude/.local/share/claude
+
+      # Claude Code binary and local files
+      - ./data/.local:/home/claude/.local
+
+      # MCP (Model Context Protocol) server configurations
+      - ./data/.mcp:/home/claude/.mcp
+
+      # npm cache for Node.js packages
+      - ./data/.npm:/home/claude/.npm
+
+      # ===== GO DEVELOPMENT DATA =====
+      # Go workspace and packages
+      - ./data/go:/home/claude/go
+
+      # Go module cache (for faster builds)
+      - ./data/.cache/go-build:/home/claude/.cache/go-build
+
+      # ===== SSH FOR GIT OPERATIONS =====
+      # SSH keys persistent storage
+      - ./data/.ssh:/home/claude/.ssh
+
+      # ===== CUSTOM PROJECTS =====
+      # Mount elearning project folder
+      - /home/rhyanz46/elearning:/workspace/elearning
+
+      # Mount web directory
+      - /var/www/html/course.go-routine.com:/workspace/course.go-routine.com
+
+      # Mount nginx config (read-only for safety)
+      - /etc/nginx/sites-available/course.go-routine.com:/etc/nginx/sites-available/course.go-routine.com:ro
+
+      # Optional: Mount git config from host
+      # Uncomment to use your host's git configuration
+      # - ~/.gitconfig:/home/claude/.gitconfig:ro
+
+    # Keep container running for interactive use
+    stdin_open: true
+    tty: true
+
+    # Working directory inside container
+    working_dir: /workspace
+
+    # Environment variables
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      # Disable auto-updates inside container (recommended)
+      - DISABLE_AUTOUPDATER=1
+      # Node.js environment
+      - NODE_ENV=development
+      # Timezone
+      - TZ=UTC
+
+    # ===== HOST NETWORK MODE =====
+    # Use host network for automatic port exposure
+    # All ports in container will be directly accessible on host
+    # Perfect for development - no port mapping needed!
+    network_mode: host
+
+    # Resource limits (optimized for 2026 standards)
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+          cpus: '3'
+
+    # Health check (optional but recommended)
+    healthcheck:
+      test: ["CMD", "claude", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Note: networks section removed because we're using host network mode
+# With host network, container shares the host's network stack directly
+
+# Note: No named volumes needed - all data stored in ./data/ directory
+# Data structure:
+# ./data/.claude/           - Claude Code config (API keys, settings)
+# ./data/.local/            - Claude Code local files
+# ./data/.local/share/claude/ - Conversations, cache
+# ./data/.mcp/              - MCP server configs
+# ./data/.npm/              - npm package cache
+# ./data/go/                - Go workspace and packages
+# ./data/.cache/go-build/   - Go build cache

@@ -1,0 +1,88 @@
+# Docker Compose with Host Directory Mounts
+# This version mounts Claude Code data to host directories for easier access and backup
+# Use this if you want to directly access Claude Code files from your host machine
+
+version: '3.9'
+
+services:
+  claude-code:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - UBUNTU_VERSION=24.04
+        - NODE_VERSION=20
+    container_name: claude-code-container
+    image: claude-code:2026.1
+    restart: unless-stopped
+
+    volumes:
+      # Mount current directory to /workspace
+      - .:/workspace
+
+      # ===== CLAUDE CODE DATA ON HOST =====
+      # These will be created in your home directory
+      # Main Claude Code configuration (includes API keys, settings)
+      - ~/.claude-docker:/home/claude/.claude
+
+      # Claude Code data cache (conversations, models, etc)
+      - ~/.claude-docker-data:/home/claude/.local/share/claude
+
+      # Claude Code binary and local files
+      - ~/.claude-docker-local:/home/claude/.local
+
+      # MCP server configurations
+      - ~/.claude-docker-mcp:/home/claude/.mcp
+
+      # npm cache
+      - ~/.claude-docker-npm:/home/claude/.npm
+
+      # Go workspace and packages
+      - ~/go-workspace:/home/claude/go
+
+      # Go build cache
+      - ~/.go-cache:/home/claude/.cache/go-build
+
+      # ===== DOCKER OUTSIDE OF DOCKER =====
+      # Mount Docker socket from host
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      # Optional: Mount your SSH keys for git operations
+      - ~/.ssh:/home/claude/.ssh:ro
+
+      # Optional: Mount your git config
+      - ~/.gitconfig:/home/claude/.gitconfig:ro
+
+    stdin_open: true
+    tty: true
+
+    working_dir: /workspace
+
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - DISABLE_AUTOUPDATER=1
+      - NODE_ENV=development
+      - TZ=UTC
+
+    # ===== HOST NETWORK MODE =====
+    # Use host network for automatic port exposure
+    network_mode: host
+
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+          cpus: '3'
+        reservations:
+          memory: 2G
+          cpus: '1'
+
+    healthcheck:
+      test: ["CMD", "claude", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Note: networks section removed because we're using host network mode
+# No volumes section needed when using host mounts
