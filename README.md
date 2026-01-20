@@ -28,6 +28,97 @@ Docker container berbasis Ubuntu 24.04 LTS (2026) untuk menjalankan Claude Code 
 - Koneksi internet untuk download dependencies dan Claude Code authentication
 - Supported OS: Linux, macOS, atau Windows dengan WSL2
 
+### macOS Users: Gunakan Colima (Recommended)
+
+Untuk pengguna macOS, sangat disarankan menggunakan **Colima** instead of Docker Desktop. Colima lebih ringan, open-source, dan support `network_mode: host` yang dibutuhkan container ini.
+
+**Kenapa Colima?**
+- ✅ Support `network_mode: host` (Docker Desktop tidak fully support)
+- ✅ Lebih ringan dan hemat resources (CPU/memory)
+- ✅ Open-source dan gratis
+- ✅ Better performance untuk development
+- ✅ Integration seamless dengan Docker CLI
+- ✅ Support VirtioFS untuk file sharing performance
+
+**Install Colima:**
+```bash
+# Install via Homebrew
+brew install colima docker docker-compose
+
+# Start Colima dengan host network support
+colima start --network host --cpu 4 --memory 8 --disk 60
+
+# Verify Docker berjalan
+docker ps
+docker info
+```
+
+**Colima Commands:**
+```bash
+# Start Colima
+colima start
+
+# Stop Colima
+colima stop
+
+# Restart Colima
+colima restart
+
+# Check status
+colima status
+
+# Delete Colima (hapus VM)
+colima delete
+
+# SSH ke Colima VM
+colima ssh
+```
+
+**Configuration Tips:**
+```bash
+# Start dengan resources yang lebih besar
+colima start --network host --cpu 6 --memory 12 --disk 100
+
+# Edit config (vi editor)
+colima default edit
+
+# Set auto-start on login
+colima default edit --runtime docker
+# Tambahkan: auto_start: true
+```
+
+**Docker Desktop vs Colima:**
+| Feature | Docker Desktop | Colima |
+|---------|---------------|---------|
+| `network_mode: host` | ❌ Limited support | ✅ Full support |
+| Resource Usage | High | Medium |
+| Performance | Medium | High |
+| Price | Paid (for teams) | Free |
+| Open Source | ❌ | ✅ |
+| Kubernetes | Built-in | Optional |
+| File Sharing | Good | Excellent (VirtioFS) |
+
+⚠️ **PENTING untuk macOS:**
+- Jika menggunakan Docker Desktop, `network_mode: host` mungkin tidak bekerja dengan baik
+- Sangat disarankan uninstall Docker Desktop sebelum install Colima
+- Atau disable Docker Desktop saat menggunakan Colima
+
+**Migration dari Docker Desktop ke Colima:**
+```bash
+# 1. Stop dan quit Docker Desktop
+# 2. Install Colima
+brew install colima docker docker-compose
+
+# 3. Start Colima
+colima start --network host --cpu 4 --memory 8
+
+# 4. Test Docker integration
+docker run hello-world
+
+# 5. Jalankan container ini
+docker-compose up -d --build
+```
+
 ## Apa yang Baru di 2026
 
 - **Ubuntu 24.04 LTS** - Lebih stabil dengan containerd 2.0 support
