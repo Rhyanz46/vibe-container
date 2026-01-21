@@ -339,14 +339,6 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
     echo '# Run setup as claude user using sudo' >> /home/claude/entrypoint.sh && \
     echo 'sudo -u claude bash -s <<"EOF"' >> /home/claude/entrypoint.sh && \
-    echo '' >> /home/claude/entrypoint.sh && \
-    echo '# Only show interactive prompts on login (not on container start)' >> /home/claude/entrypoint.sh && \
-    echo 'if [[ -t 0 && "$1" == "/bin/bash" ]]; then' >> /home/claude/entrypoint.sh && \
-    echo '    INTERACTIVE_MODE=true' >> /home/claude/entrypoint.sh && \
-    echo 'else' >> /home/claude/entrypoint.sh && \
-    echo '    INTERACTIVE_MODE=false' >> /home/claude/entrypoint.sh && \
-    echo 'fi' >> /home/claude/entrypoint.sh && \
-    echo '' >> /home/claude/entrypoint.sh && \
     echo '# Auto-setup SSH key if not exists' >> /home/claude/entrypoint.sh && \
     echo 'if [ ! -f /home/claude/.ssh/id_ed25519 ]; then' >> /home/claude/entrypoint.sh && \
     echo '    echo "🔑 Generating SSH key..."' >> /home/claude/entrypoint.sh && \
@@ -404,96 +396,6 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '        echo "   You can install it later with: npm install -g playwright-mcp"' >> /home/claude/entrypoint.sh && \
     echo '    fi' >> /home/claude/entrypoint.sh && \
     echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo 'fi' >> /home/claude/entrypoint.sh && \
-    echo '' >> /home/claude/entrypoint.sh && \
-    echo '# Check and offer Flutter installation' >> /home/claude/entrypoint.sh && \
-    echo 'if ! command -v flutter &> /dev/null; then' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    echo "📱 Flutter Development"' >> /home/claude/entrypoint.sh && \
-    echo '    echo "==========================="' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    echo "Flutter is not installed."' >> /home/claude/entrypoint.sh && \
-    echo '    echo "Flutter SDK for mobile, web, and desktop app development."' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    read -p "Install Flutter SDK? (y/N): " -n 1 -r' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/entrypoint.sh && \
-    echo '        echo "📦 Installing Flutter..."' >> /home/claude/entrypoint.sh && \
-    echo '        cd ~ && git clone https://github.com/flutter/flutter.git -b stable --depth 1' >> /home/claude/entrypoint.sh && \
-    echo '        echo "export PATH=\"\$HOME/flutter/bin:\$PATH\"" >> ~/.bashrc' >> /home/claude/entrypoint.sh && \
-    echo '        export PATH="\$HOME/flutter/bin:\$PATH"' >> /home/claude/entrypoint.sh && \
-    echo '        flutter precache --web' >> /home/claude/entrypoint.sh && \
-    echo '        echo ""' >> /home/claude/entrypoint.sh && \
-    echo '        echo "✅ Flutter installed successfully!"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "   Version: $(flutter --version 2>&1 | head -1)"' >> /home/claude/entrypoint.sh && \
-    echo '        echo ""' >> /home/claude/entrypoint.sh && \
-    echo '        echo "🔧 Components installed:"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "   ✅ Flutter SDK (stable channel)"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "   ✅ Dart SDK (included in Flutter)"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "   ✅ Web build tools"' >> /home/claude/entrypoint.sh && \
-    echo '        echo ""' >> /home/claude/entrypoint.sh && \
-    echo '        echo "⚠️  For mobile development, additional setup needed:"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "   1. flutter doctor" >> /home/claude/entrypoint.sh && \
-    echo '        echo "   2. flutter doctor --android-licenses  (for Android)"' >> /home/claude/entrypoint.sh && \
-    echo '        echo ""' >> /home/claude/entrypoint.sh && \
-    echo '        echo "💡 Desktop platforms (Linux/Windows/macOS) work out of the box!"' >> /home/claude/entrypoint.sh && \
-    echo '    else' >> /home/claude/entrypoint.sh && \
-    echo '        echo "⏭️  Skipping Flutter installation"' >> /home/claude/entrypoint.sh && \
-    echo '    fi' >> /home/claude/entrypoint.sh && \
-    echo 'else' >> /home/claude/entrypoint.sh && \
-    echo '    echo "✅ Flutter already installed: $(flutter --version 2>&1 | head -1)"' >> /home/claude/entrypoint.sh && \
-    echo 'fi' >> /home/claude/entrypoint.sh && \
-    echo '' >> /home/claude/entrypoint.sh && \
-    echo '# Check and offer Rust installation' >> /home/claude/entrypoint.sh && \
-    echo 'if ! command -v cargo &> /dev/null; then' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    echo "🦀 Rust Development"' >> /home/claude/entrypoint.sh && \
-    echo '    echo "====================="' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    echo "Rust is not installed."' >> /home/claude/entrypoint.sh && \
-    echo '    echo "Systems programming language focused on safety and performance."' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    read -p "Install Rust? (y/N): " -n 1 -r' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/entrypoint.sh && \
-    echo '        echo "📦 Installing Rust..."' >> /home/claude/entrypoint.sh && \
-    echo '        curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y' >> /home/claude/entrypoint.sh && \
-    echo '        . "\$HOME/.cargo/env"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "source \$HOME/.cargo/env" >> ~/.bashrc' >> /home/claude/entrypoint.sh && \
-    echo '        echo "✅ Rust installed successfully!"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "   Cargo: $(cargo --version)"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "   Rustc: $(rustc --version)"' >> /home/claude/entrypoint.sh && \
-    echo '    else' >> /home/claude/entrypoint.sh && \
-    echo '        echo "⏭️  Skipping Rust installation"' >> /home/claude/entrypoint.sh && \
-    echo '    fi' >> /home/claude/entrypoint.sh && \
-    echo 'else' >> /home/claude/entrypoint.sh && \
-    echo '    echo "✅ Rust already installed: $(rustc --version)"' >> /home/claude/entrypoint.sh && \
-    echo 'fi' >> /home/claude/entrypoint.sh && \
-    echo '' >> /home/claude/entrypoint.sh && \
-    echo '# Check and offer Java/Kotlin installation' >> /home/claude/entrypoint.sh && \
-    echo 'if ! command -v java &> /dev/null; then' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    echo "☕ Java/Kotlin Development"' >> /home/claude/entrypoint.sh && \
-    echo '    echo "============================="' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    echo "Java is not installed."' >> /home/claude/entrypoint.sh && \
-    echo '    echo "Needed for Android, backend, and enterprise development."' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    read -p "Install Java JDK (OpenJDK 21)? (y/N): " -n 1 -r' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/entrypoint.sh && \
-    echo '        echo "📦 Installing Java..."' >> /home/claude/entrypoint.sh && \
-    echo '        sudo apt-get update && sudo apt-get install -y openjdk-21-jdk' >> /home/claude/entrypoint.sh && \
-    echo '        echo "✅ Java installed successfully!"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "   Java: $(java -version 2>&1 | head -1)"' >> /home/claude/entrypoint.sh && \
-    echo '        echo ""' >> /home/claude/entrypoint.sh && \
-    echo '        echo "💡 For Kotlin development, install Kotlin compiler:"' >> /home/claude/entrypoint.sh && \
-    echo '        echo "   curl -sSL https://get.kotlinc.org | bash"' >> /home/claude/entrypoint.sh && \
-    echo '    else' >> /home/claude/entrypoint.sh && \
-    echo '        echo "⏭️  Skipping Java installation"' >> /home/claude/entrypoint.sh && \
-    echo '    fi' >> /home/claude/entrypoint.sh && \
-    echo 'else' >> /home/claude/entrypoint.sh && \
-    echo '    echo "✅ Java already installed: $(java -version 2>&1 | head -1)"' >> /home/claude/entrypoint.sh && \
     echo 'fi' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
     echo '# Simple prompt (no colors to avoid Claude Code light mode issues)' >> /home/claude/entrypoint.sh && \
