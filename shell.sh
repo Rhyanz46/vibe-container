@@ -16,7 +16,7 @@ if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     sleep 3
 fi
 
-# Enter the container
+# Enter the container with login shell to trigger entrypoint
 echo "🚀 Entering Claude Code container..."
 echo ""
-docker exec -it ${CONTAINER_NAME} bash
+docker exec -it ${CONTAINER_NAME} bash -l

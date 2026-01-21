@@ -186,6 +186,165 @@ RUN echo '# Source global definitions' >> /home/claude/.bashrc && \
     echo 'echo ""' >> /home/claude/.bashrc && \
     chown -R claude:claude /home/claude/.bashrc
 
+# Create .bash_profile for login shell (shows welcome message and installation prompts)
+RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
+    echo '' >> /home/claude/.bash_profile && \
+    echo '# Source .bashrc if it exists' >> /home/claude/.bash_profile && \
+    echo 'if [ -f ~/.bashrc ]; then' >> /home/claude/.bash_profile && \
+    echo '    source ~/.bashrc' >> /home/claude/.bash_profile && \
+    echo 'fi' >> /home/claude/.bash_profile && \
+    echo '' >> /home/claude/.bash_profile && \
+    echo '# Only show welcome message and prompts in interactive login shell' >> /home/claude/.bash_profile && \
+    echo 'if [[ $- == *i* && -t 1 ]]; then' >> /home/claude/.bash_profile && \
+    echo '    # Check if this is first login in this session' >> /home/claude/.bash_profile && \
+    echo '    if [ -z "$CLAUDE_WELCOME_SHOWN" ]; then' >> /home/claude/.bash_profile && \
+    echo '        export CLAUDE_WELCOME_SHOWN=1' >> /home/claude/.bash_profile && \
+    echo '        echo ""' >> /home/claude/.bash_profile && \
+    echo '        echo "╔════════════════════════════════════════════════════════════╗"' >> /home/claude/.bash_profile && \
+    echo '        echo "║          Welcome to Claude Code Dev Environment           ║"' >> /home/claude/.bash_profile && \
+    echo '        echo "╚════════════════════════════════════════════════════════════╝"' >> /home/claude/.bash_profile && \
+    echo '        echo ""' >> /home/claude/.bash_profile && \
+    echo '        echo "🔧 Your Development Tools:"' >> /home/claude/.bash_profile && \
+    echo '        echo "   • Go: $(go version 2>/dev/null | awk '"'"'{print $3}'"'"')"' >> /home/claude/.bash_profile && \
+    echo '        echo "   • Node.js: $(node --version 2>/dev/null) (Default: $(nvm version 2>/dev/null))"' >> /home/claude/.bash_profile && \
+    echo '        echo "   • Python: $(python3 --version 2>/dev/null)"' >> /home/claude/.bash_profile && \
+    echo '        echo "   • npm: $(npm --version 2>/dev/null)"' >> /home/claude/.bash_profile && \
+    echo '        echo ""' >> /home/claude/.bash_profile && \
+    echo '        echo "🔑 Your SSH Public Key (for GitHub/GitLab):"' >> /home/claude/.bash_profile && \
+    echo '        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"' >> /home/claude/.bash_profile && \
+    echo '        cat /home/claude/.ssh/id_ed25519.pub' >> /home/claude/.bash_profile && \
+    echo '        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"' >> /home/claude/.bash_profile && \
+    echo '        echo ""' >> /home/claude/.bash_profile && \
+    echo '        echo "💡 Quick Commands:"' >> /home/claude/.bash_profile && \
+    echo '        echo "   • cd /workspace       - Go to project directory"' >> /home/claude/.bash_profile && \
+    echo '        echo "   • docker ps          - List containers (via host Docker daemon)"' >> /home/claude/.bash_profile && \
+    echo '        echo "   • nvm use 22         - Switch Node.js to v22"' >> /home/claude/.bash_profile && \
+    echo '        echo ""' >> /home/claude/.bash_profile && \
+    echo '' >> /home/claude/.bash_profile && \
+    echo '        # Check and offer Playwright MCP installation' >> /home/claude/.bash_profile && \
+    echo '        if ! command -v npx &> /dev/null; then' >> /home/claude/.bash_profile && \
+    echo '            echo "⚠️  npx not found. Skipping Playwright MCP installation."' >> /home/claude/.bash_profile && \
+    echo '        elif npm list -g playwright-mcp &> /dev/null; then' >> /home/claude/.bash_profile && \
+    echo '            echo "✅ Playwright MCP already installed"' >> /home/claude/.bash_profile && \
+    echo '        else' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "🎭 Playwright MCP Not Installed"' >> /home/claude/.bash_profile && \
+    echo '            echo "==============================="' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "Would you like to install Playwright MCP now?"' >> /home/claude/.bash_profile && \
+    echo '            echo "This enables browser automation and AI integration features."' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            read -p "Install Playwright MCP? (y/N): " -n 1 -r' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/.bash_profile && \
+    echo '                echo "📦 Installing Playwright MCP..."' >> /home/claude/.bash_profile && \
+    echo '                . "$NVM_DIR/nvm.sh" && nvm use 25' >> /home/claude/.bash_profile && \
+    echo '                npm install -g playwright-mcp' >> /home/claude/.bash_profile && \
+    echo '                echo "✅ Playwright MCP installed successfully!"' >> /home/claude/.bash_profile && \
+    echo '                echo ""' >> /home/claude/.bash_profile && \
+    echo '                echo "💡 Note: Playwright browsers (Chromium) will be downloaded on first use"' >> /home/claude/.bash_profile && \
+    echo '                echo "   You can install them manually with: npx playwright install chromium"' >> /home/claude/.bash_profile && \
+    echo '            else' >> /home/claude/.bash_profile && \
+    echo '                echo "⏭️  Skipping Playwright MCP installation"' >> /home/claude/.bash_profile && \
+    echo '                echo "   You can install it later with: npm install -g playwright-mcp"' >> /home/claude/.bash_profile && \
+    echo '            fi' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '        fi' >> /home/claude/.bash_profile && \
+    echo '' >> /home/claude/.bash_profile && \
+    echo '        # Check and offer Flutter installation' >> /home/claude/.bash_profile && \
+    echo '        if ! command -v flutter &> /dev/null; then' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "📱 Flutter Development"' >> /home/claude/.bash_profile && \
+    echo '            echo "==========================="' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "Flutter is not installed."' >> /home/claude/.bash_profile && \
+    echo '            echo "Flutter SDK for mobile, web, and desktop app development."' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            read -p "Install Flutter SDK? (y/N): " -n 1 -r' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/.bash_profile && \
+    echo '                echo "📦 Installing Flutter..."' >> /home/claude/.bash_profile && \
+    echo '                cd ~ && git clone https://github.com/flutter/flutter.git -b stable --depth 1' >> /home/claude/.bash_profile && \
+    echo '                echo "export PATH=\"\$HOME/flutter/bin:\$PATH\"" >> ~/.bashrc' >> /home/claude/.bash_profile && \
+    echo '                export PATH="\$HOME/flutter/bin:\$PATH"' >> /home/claude/.bash_profile && \
+    echo '                flutter precache --web' >> /home/claude/.bash_profile && \
+    echo '                echo ""' >> /home/claude/.bash_profile && \
+    echo '                echo "✅ Flutter installed successfully!"' >> /home/claude/.bash_profile && \
+    echo '                echo "   Version: $(flutter --version 2>&1 | head -1)"' >> /home/claude/.bash_profile && \
+    echo '                echo ""' >> /home/claude/.bash_profile && \
+    echo '                echo "🔧 Components installed:"' >> /home/claude/.bash_profile && \
+    echo '                echo "   ✅ Flutter SDK (stable channel)"' >> /home/claude/.bash_profile && \
+    echo '                echo "   ✅ Dart SDK (included in Flutter)"' >> /home/claude/.bash_profile && \
+    echo '                echo "   ✅ Web build tools"' >> /home/claude/.bash_profile && \
+    echo '                echo ""' >> /home/claude/.bash_profile && \
+    echo '                echo "⚠️  For mobile development, additional setup needed:"' >> /home/claude/.bash_profile && \
+    echo '                echo "   1. flutter doctor"' >> /home/claude/.bash_profile && \
+    echo '                echo "   2. flutter doctor --android-licenses  (for Android)"' >> /home/claude/.bash_profile && \
+    echo '                echo ""' >> /home/claude/.bash_profile && \
+    echo '                echo "💡 Desktop platforms (Linux/Windows/macOS) work out of the box!"' >> /home/claude/.bash_profile && \
+    echo '            else' >> /home/claude/.bash_profile && \
+    echo '                echo "⏭️  Skipping Flutter installation"' >> /home/claude/.bash_profile && \
+    echo '            fi' >> /home/claude/.bash_profile && \
+    echo '        else' >> /home/claude/.bash_profile && \
+    echo '            echo "✅ Flutter already installed: $(flutter --version 2>&1 | head -1)"' >> /home/claude/.bash_profile && \
+    echo '        fi' >> /home/claude/.bash_profile && \
+    echo '' >> /home/claude/.bash_profile && \
+    echo '        # Check and offer Rust installation' >> /home/claude/.bash_profile && \
+    echo '        if ! command -v cargo &> /dev/null; then' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "🦀 Rust Development"' >> /home/claude/.bash_profile && \
+    echo '            echo "====================="' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "Rust is not installed."' >> /home/claude/.bash_profile && \
+    echo '            echo "Systems programming language focused on safety and performance."' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            read -p "Install Rust? (y/N): " -n 1 -r' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/.bash_profile && \
+    echo '                echo "📦 Installing Rust..."' >> /home/claude/.bash_profile && \
+    echo '                curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y' >> /home/claude/.bash_profile && \
+    echo '                . "\$HOME/.cargo/env"' >> /home/claude/.bash_profile && \
+    echo '                echo "source \$HOME/.cargo/env" >> ~/.bashrc' >> /home/claude/.bash_profile && \
+    echo '                echo "✅ Rust installed successfully!"' >> /home/claude/.bash_profile && \
+    echo '                echo "   Cargo: $(cargo --version)"' >> /home/claude/.bash_profile && \
+    echo '                echo "   Rustc: $(rustc --version)"' >> /home/claude/.bash_profile && \
+    echo '            else' >> /home/claude/.bash_profile && \
+    echo '                echo "⏭️  Skipping Rust installation"' >> /home/claude/.bash_profile && \
+    echo '            fi' >> /home/claude/.bash_profile && \
+    echo '        else' >> /home/claude/.bash_profile && \
+    echo '            echo "✅ Rust already installed: $(rustc --version)"' >> /home/claude/.bash_profile && \
+    echo '        fi' >> /home/claude/.bash_profile && \
+    echo '' >> /home/claude/.bash_profile && \
+    echo '        # Check and offer Java/Kotlin installation' >> /home/claude/.bash_profile && \
+    echo '        if ! command -v java &> /dev/null; then' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "☕ Java/Kotlin Development"' >> /home/claude/.bash_profile && \
+    echo '            echo "============================="' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "Java is not installed."' >> /home/claude/.bash_profile && \
+    echo '            echo "Needed for Android, backend, and enterprise development."' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            read -p "Install Java JDK (OpenJDK 21)? (y/N): " -n 1 -r' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/.bash_profile && \
+    echo '                echo "📦 Installing Java..."' >> /home/claude/.bash_profile && \
+    echo '                sudo apt-get update && sudo apt-get install -y openjdk-21-jdk' >> /home/claude/.bash_profile && \
+    echo '                echo "✅ Java installed successfully!"' >> /home/claude/.bash_profile && \
+    echo '                echo "   Java: $(java -version 2>&1 | head -1)"' >> /home/claude/.bash_profile && \
+    echo '                echo ""' >> /home/claude/.bash_profile && \
+    echo '                echo "💡 For Kotlin development, install Kotlin compiler:"' >> /home/claude/.bash_profile && \
+    echo '                echo "   curl -sSL https://get.kotlinc.org | bash"' >> /home/claude/.bash_profile && \
+    echo '            else' >> /home/claude/.bash_profile && \
+    echo '                echo "⏭️  Skipping Java installation"' >> /home/claude/.bash_profile && \
+    echo '            fi' >> /home/claude/.bash_profile && \
+    echo '        else' >> /home/claude/.bash_profile && \
+    echo '            echo "✅ Java already installed: $(java -version 2>&1 | head -1)"' >> /home/claude/.bash_profile && \
+    echo '        fi' >> /home/claude/.bash_profile && \
+    echo '        echo ""' >> /home/claude/.bash_profile && \
+    echo '    fi' >> /home/claude/.bash_profile && \
+    echo 'fi' >> /home/claude/.bash_profile && \
+    chown -R claude:claude /home/claude/.bash_profile
+
 # Create .inputrc for better keyboard handling
 RUN echo '# Bell style' >> /home/claude/.inputrc && \
     echo 'set bell-style none' >> /home/claude/.inputrc && \
