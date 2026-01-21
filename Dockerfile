@@ -281,6 +281,36 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo 'ssh-keyscan gitlab.com >> /home/claude/.ssh/known_hosts 2>/dev/null' >> /home/claude/entrypoint.sh && \
     echo 'chmod 644 /home/claude/.ssh/known_hosts' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
+    echo '# Check and offer Playwright MCP installation' >> /home/claude/entrypoint.sh && \
+    echo 'if ! command -v npx &> /dev/null; then' >> /home/claude/entrypoint.sh && \
+    echo '    echo "⚠️  npx not found. Skipping Playwright MCP installation."' >> /home/claude/entrypoint.sh && \
+    echo 'elif npm list -g playwright-mcp &> /dev/null; then' >> /home/claude/entrypoint.sh && \
+    echo '    echo "✅ Playwright MCP already installed"' >> /home/claude/entrypoint.sh && \
+    echo 'else' >> /home/claude/entrypoint.sh && \
+    echo '    echo ""' >> /home/claude/entrypoint.sh && \
+    echo '    echo "🎭 Playwright MCP Not Installed"' >> /home/claude/entrypoint.sh && \
+    echo '    echo "==============================="' >> /home/claude/entrypoint.sh && \
+    echo '    echo ""' >> /home/claude/entrypoint.sh && \
+    echo '    echo "Would you like to install Playwright MCP now?"' >> /home/claude/entrypoint.sh && \
+    echo '    echo "This enables browser automation and AI integration features."' >> /home/claude/entrypoint.sh && \
+    echo '    echo ""' >> /home/claude/entrypoint.sh && \
+    echo '    read -p "Install Playwright MCP? (y/N): " -n 1 -r' >> /home/claude/entrypoint.sh && \
+    echo '    echo ""' >> /home/claude/entrypoint.sh && \
+    echo '    if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/entrypoint.sh && \
+    echo '        echo "📦 Installing Playwright MCP..."' >> /home/claude/entrypoint.sh && \
+    echo '        . "$NVM_DIR/nvm.sh" && nvm use 25' >> /home/claude/entrypoint.sh && \
+    echo '        npm install -g playwright-mcp' >> /home/claude/entrypoint.sh && \
+    echo '        echo "✅ Playwright MCP installed successfully!"' >> /home/claude/entrypoint.sh && \
+    echo '        echo ""' >> /home/claude/entrypoint.sh && \
+    echo '        echo "💡 Note: Playwright browsers (Chromium) will be downloaded on first use"' >> /home/claude/entrypoint.sh && \
+    echo '        echo "   You can install them manually with: npx playwright install chromium"' >> /home/claude/entrypoint.sh && \
+    echo '    else' >> /home/claude/entrypoint.sh && \
+    echo '        echo "⏭️  Skipping Playwright MCP installation"' >> /home/claude/entrypoint.sh && \
+    echo '        echo "   You can install it later with: npm install -g playwright-mcp"' >> /home/claude/entrypoint.sh && \
+    echo '    fi' >> /home/claude/entrypoint.sh && \
+    echo '    echo ""' >> /home/claude/entrypoint.sh && \
+    echo 'fi' >> /home/claude/entrypoint.sh && \
+    echo '' >> /home/claude/entrypoint.sh && \
     echo '# Simple prompt (no colors to avoid Claude Code light mode issues)' >> /home/claude/entrypoint.sh && \
     echo 'export PS1="\\u@\\h:\\w\\$ "' >> /home/claude/entrypoint.sh && \
     echo 'EOF' >> /home/claude/entrypoint.sh && \
