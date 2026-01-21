@@ -250,6 +250,11 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo 'chown -R claude:claude /home/claude/.ssh 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo 'chmod 700 /home/claude/.ssh' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
+    echo '# Fix /workspace ownership if it is a mounted volume' >> /home/claude/entrypoint.sh && \
+    echo 'if [ -d /workspace ]; then' >> /home/claude/entrypoint.sh && \
+    echo '    chown -R claude:claude /workspace 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo 'fi' >> /home/claude/entrypoint.sh && \
+    echo '' >> /home/claude/entrypoint.sh && \
     echo '# Run setup as claude user using sudo' >> /home/claude/entrypoint.sh && \
     echo 'sudo -u claude bash -s <<"EOF"' >> /home/claude/entrypoint.sh && \
     echo '# Auto-setup SSH key if not exists' >> /home/claude/entrypoint.sh && \
