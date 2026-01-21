@@ -547,6 +547,9 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '    echo "✅ SSH key generated!"' >> /home/claude/entrypoint.sh && \
     echo 'else' >> /home/claude/entrypoint.sh && \
     echo '    echo "✅ SSH key already exists"' >> /home/claude/entrypoint.sh && \
+    echo '    # Ensure SSH key files have correct permissions even if they were mounted from volume' >> /home/claude/entrypoint.sh && \
+    echo '    chmod 600 /home/claude/.ssh/id_ed25519 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo '    chmod 644 /home/claude/.ssh/id_ed25519.pub 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo 'fi' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
     echo '# Setup git config if not exists' >> /home/claude/entrypoint.sh && \
@@ -708,6 +711,11 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '# Simple prompt (no colors to avoid Claude Code light mode issues)' >> /home/claude/entrypoint.sh && \
     echo 'export PS1="\\u@\\h:\\w\\$ "' >> /home/claude/entrypoint.sh && \
     echo 'EOF' >> /home/claude/entrypoint.sh && \
+    echo '' >> /home/claude/entrypoint.sh && \
+    echo '# Fix npm cache ownership to prevent permission errors' >> /home/claude/entrypoint.sh && \
+    echo 'if [ -d /home/claude/.npm ]; then' >> /home/claude/entrypoint.sh && \
+    echo '    chown -R claude:claude /home/claude/.npm 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo 'fi' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
     echo '# Execute the main command as claude user' >> /home/claude/entrypoint.sh && \
     echo 'exec sudo -u claude "$@"' >> /home/claude/entrypoint.sh && \
