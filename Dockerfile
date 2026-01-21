@@ -341,8 +341,6 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '            echo "✅ Java already installed: $(java -version 2>&1 | head -1)"' >> /home/claude/.bash_profile && \
     echo '        fi' >> /home/claude/.bash_profile && \
     echo '        echo ""' >> /home/claude/.bash_profile && \
-    echo '    fi' >> /home/claude/.bash_profile && \
-    echo '' >> /home/claude/.bash_profile && \
     echo '        # Check and offer Docker CLI installation' >> /home/claude/.bash_profile && \
     echo '        if ! command -v docker &> /dev/null; then' >> /home/claude/.bash_profile && \
     echo '            echo ""' >> /home/claude/.bash_profile && \
