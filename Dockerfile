@@ -547,10 +547,11 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '    echo "✅ SSH key generated!"' >> /home/claude/entrypoint.sh && \
     echo 'else' >> /home/claude/entrypoint.sh && \
     echo '    echo "✅ SSH key already exists"' >> /home/claude/entrypoint.sh && \
-    echo '    # Ensure SSH key files have correct permissions even if they were mounted from volume' >> /home/claude/entrypoint.sh && \
-    echo '    chmod 600 /home/claude/.ssh/id_ed25519 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
-    echo '    chmod 644 /home/claude/.ssh/id_ed25519.pub 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo 'fi' >> /home/claude/entrypoint.sh && \
+    echo '' >> /home/claude/entrypoint.sh && \
+    echo '# Ensure SSH key files have correct permissions (fix for mounted/existing keys)' >> /home/claude/entrypoint.sh && \
+    echo 'chmod 600 /home/claude/.ssh/id_ed25519 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo 'chmod 644 /home/claude/.ssh/id_ed25519.pub 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
     echo '# Setup git config if not exists' >> /home/claude/entrypoint.sh && \
     echo 'if [ ! -f /home/claude/.gitconfig ]; then' >> /home/claude/entrypoint.sh && \
@@ -588,6 +589,17 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo 'echo "   • docker ps          - List containers"' >> /home/claude/entrypoint.sh && \
     echo 'echo "   • nvm use 22         - Switch Node.js to v22"' >> /home/claude/entrypoint.sh && \
     echo 'echo ""' >> /home/claude/entrypoint.sh && \
+    echo '# Fix npm cache ownership issues before running any npm commands' >> /home/claude/entrypoint.sh && \
+    echo 'if [ -d /home/claude/.npm ]; then' >> /home/claude/entrypoint.sh && \
+    echo '    # Check if cache has root-owned files' >> /home/claude/entrypoint.sh && \
+    echo '    if find /home/claude/.npm -user root -type d 2>/dev/null | grep -q .; then' >> /home/claude/entrypoint.sh && \
+    echo '        echo "🔧 Fixing npm cache permissions..."' >> /home/claude/entrypoint.sh && \
+    echo '        sudo chown -R claude:claude /home/claude/.npm' >> /home/claude/entrypoint.sh && \
+    echo '        echo "✅ Cache permissions fixed!"' >> /home/claude/entrypoint.sh && \
+    echo '        echo ""' >> /home/claude/entrypoint.sh && \
+    echo '    fi' >> /home/claude/entrypoint.sh && \
+    echo 'fi' >> /home/claude/entrypoint.sh && \
+    echo '' >> /home/claude/entrypoint.sh && \
     echo '# Check and offer Playwright MCP installation' >> /home/claude/entrypoint.sh && \
     echo 'if ! command -v npx &> /dev/null; then' >> /home/claude/entrypoint.sh && \
     echo '    echo "⚠️  npx not found. Skipping Playwright MCP installation."' >> /home/claude/entrypoint.sh && \
