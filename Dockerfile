@@ -346,10 +346,6 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '    chmod 600 /home/claude/.ssh/id_ed25519' >> /home/claude/entrypoint.sh && \
     echo '    chmod 644 /home/claude/.ssh/id_ed25519.pub' >> /home/claude/entrypoint.sh && \
     echo '    echo "✅ SSH key generated!"' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
-    echo '    echo "📋 Public key (add this to GitHub/GitLab):"' >> /home/claude/entrypoint.sh && \
-    echo '    cat /home/claude/.ssh/id_ed25519.pub' >> /home/claude/entrypoint.sh && \
-    echo '    echo ""' >> /home/claude/entrypoint.sh && \
     echo 'else' >> /home/claude/entrypoint.sh && \
     echo '    echo "✅ SSH key already exists"' >> /home/claude/entrypoint.sh && \
     echo 'fi' >> /home/claude/entrypoint.sh && \
@@ -368,6 +364,28 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo 'ssh-keyscan gitlab.com >> /home/claude/.ssh/known_hosts 2>/dev/null' >> /home/claude/entrypoint.sh && \
     echo 'chmod 644 /home/claude/.ssh/known_hosts' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
+    echo '# Show welcome message and SSH key' >> /home/claude/entrypoint.sh && \
+    echo 'echo ""' >> /home/claude/entrypoint.sh && \
+    echo 'echo "╔════════════════════════════════════════════════════════════╗"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "║          Welcome to Claude Code Dev Environment           ║"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "╚════════════════════════════════════════════════════════════╝"' >> /home/claude/entrypoint.sh && \
+    echo 'echo ""' >> /home/claude/entrypoint.sh && \
+    echo 'echo "🔧 Your Development Tools:"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "   • Go: $(go version 2>/dev/null | awk '"'"'{print $3}'"'"')"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "   • Node.js: $(node --version 2>/dev/null) (Default: $(nvm version 2>/dev/null))"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "   • Python: $(python3 --version 2>/dev/null)"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "   • npm: $(npm --version 2>/dev/null)"' >> /home/claude/entrypoint.sh && \
+    echo 'echo ""' >> /home/claude/entrypoint.sh && \
+    echo 'echo "🔑 Your SSH Public Key (for GitHub/GitLab):"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"' >> /home/claude/entrypoint.sh && \
+    echo 'cat /home/claude/.ssh/id_ed25519.pub' >> /home/claude/entrypoint.sh && \
+    echo 'echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"' >> /home/claude/entrypoint.sh && \
+    echo 'echo ""' >> /home/claude/entrypoint.sh && \
+    echo 'echo "💡 Quick Commands:"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "   • cd /workspace       - Go to project directory"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "   • docker ps          - List containers"' >> /home/claude/entrypoint.sh && \
+    echo 'echo "   • nvm use 22         - Switch Node.js to v22"' >> /home/claude/entrypoint.sh && \
+    echo 'echo ""' >> /home/claude/entrypoint.sh && \
     echo '# Check and offer Playwright MCP installation' >> /home/claude/entrypoint.sh && \
     echo 'if ! command -v npx &> /dev/null; then' >> /home/claude/entrypoint.sh && \
     echo '    echo "⚠️  npx not found. Skipping Playwright MCP installation."' >> /home/claude/entrypoint.sh && \
