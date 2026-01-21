@@ -535,6 +535,13 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '    chown -R claude:claude /workspace 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo 'fi' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
+    echo '# Fix Claude Code data directories ownership to prevent permission errors' >> /home/claude/entrypoint.sh && \
+    echo 'for dir in .claude .local .npm .ssh go .cache .mcp; do' >> /home/claude/entrypoint.sh && \
+    echo '    if [ -d /home/claude/$dir ]; then' >> /home/claude/entrypoint.sh && \
+    echo '        chown -R claude:claude /home/claude/$dir 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo '    fi' >> /home/claude/entrypoint.sh && \
+    echo 'done' >> /home/claude/entrypoint.sh && \
+    echo '' >> /home/claude/entrypoint.sh && \
     echo '# Fix .config directory ownership and create Flutter config directory' >> /home/claude/entrypoint.sh && \
     echo 'chown -R claude:claude /home/claude/.config 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo 'mkdir -p /home/claude/.config/flutter 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
