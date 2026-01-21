@@ -1,0 +1,22 @@
+#!/bin/bash
+# Quick access script to enter Claude Code container
+# Usage: ./shell.sh
+
+CONTAINER_NAME="claude-code-container"
+
+# Check if container is running
+if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "❌ Container '${CONTAINER_NAME}' is not running!"
+    echo ""
+    echo "Starting container..."
+    docker-compose up -d
+
+    # Wait for container to be ready
+    echo "Waiting for container to be ready..."
+    sleep 3
+fi
+
+# Enter the container
+echo "🚀 Entering Claude Code container..."
+echo ""
+docker exec -it ${CONTAINER_NAME} bash
