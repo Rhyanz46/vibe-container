@@ -342,6 +342,46 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '        fi' >> /home/claude/.bash_profile && \
     echo '        echo ""' >> /home/claude/.bash_profile && \
     echo '    fi' >> /home/claude/.bash_profile && \
+    echo '' >> /home/claude/.bash_profile && \
+    echo '        # Check and offer Docker CLI installation' >> /home/claude/.bash_profile && \
+    echo '        if ! command -v docker &> /dev/null; then' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "🐳 Docker CLI Not Installed"' >> /home/claude/.bash_profile && \
+    echo '            echo "==========================="' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            echo "Docker CLI is not installed."' >> /home/claude/.bash_profile && \
+    echo '            echo "Manage host Docker containers from within the container."' >> /home/claude/.bash_profile && \
+    echo '            echo "Connects to host Docker daemon via: tcp://localhost:2375"' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            read -p "Install Docker CLI? (y/N): " -n 1 -r' >> /home/claude/.bash_profile && \
+    echo '            echo ""' >> /home/claude/.bash_profile && \
+    echo '            if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/.bash_profile && \
+    echo '                echo "📦 Installing Docker CLI..."' >> /home/claude/.bash_profile && \
+    echo '                curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz | tar xz -C /tmp &&' >> /home/claude/.bash_profile && \
+    echo '                sudo mv /tmp/docker /usr/local/bin/ &&' >> /home/claude/.bash_profile && \
+    echo '                sudo chmod +x /usr/local/bin/docker &&' >> /home/claude/.bash_profile && \
+    echo '                echo ""' >> /home/claude/.bash_profile && \
+    echo '                echo "✅ Docker CLI installed successfully!"' >> /home/claude/.bash_profile && \
+    echo '                echo "   Version: $(docker --version)"' >> /home/claude/.bash_profile && \
+    echo '                echo ""' >> /home/claude/.bash_profile && \
+    echo '                echo "💡 Connected to host Docker daemon:"' >> /home/claude/.bash_profile && \
+    echo '                echo "   DOCKER_HOST=$DOCKER_HOST"' >> /home/claude/.bash_profile && \
+    echo '                echo ""' >> /home/claude/.bash_profile && \
+    echo '                echo "Try it:"' >> /home/claude/.bash_profile && \
+    echo '                echo "   docker ps          # List host containers"' >> /home/claude/.bash_profile && \
+    echo '                echo "   docker images      # List host images"' >> /home/claude/.bash_profile && \
+    echo '                echo "   docker compose up  # Run docker-compose"' >> /home/claude/.bash_profile && \
+    echo '            else' >> /home/claude/.bash_profile && \
+    echo '                echo "⏭️  Skipping Docker CLI installation"' >> /home/claude/.bash_profile && \
+    echo '                echo "   You can install it later with:"' >> /home/claude/.bash_profile && \
+    echo '                echo "   curl -fsSL https://get.docker.com | sh"' >> /home/claude/.bash_profile && \
+    echo '            fi' >> /home/claude/.bash_profile && \
+    echo '        else' >> /home/claude/.bash_profile && \
+    echo '            echo "✅ Docker CLI already installed: $(docker --version)"' >> /home/claude/.bash_profile && \
+    echo '            echo "   Connected to: $DOCKER_HOST"' >> /home/claude/.bash_profile && \
+    echo '        fi' >> /home/claude/.bash_profile && \
+    echo '        echo ""' >> /home/claude/.bash_profile && \
+    echo '    fi' >> /home/claude/.bash_profile && \
     echo 'fi' >> /home/claude/.bash_profile && \
     chown -R claude:claude /home/claude/.bash_profile
 
