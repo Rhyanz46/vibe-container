@@ -61,9 +61,6 @@ services:
       # Mount web directory
       - /var/www/html/course.go-routine.com:/workspace/course.go-routine.com
 
-      # Mount nginx config (read-only for safety)
-      - /etc/nginx/sites-available/course.go-routine.com:/etc/nginx/sites-available/course.go-routine.com:ro
-
       # Optional: Mount git config from host
       # Uncomment to use your host's git configuration
       # - ~/.gitconfig:/home/claude/.gitconfig:ro
