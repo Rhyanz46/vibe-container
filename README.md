@@ -39,19 +39,36 @@ Untuk pengguna macOS, sangat disarankan menggunakan **Colima** instead of Docker
 - ✅ Better performance untuk development
 - ✅ Integration seamless dengan Docker CLI
 - ✅ Support VirtioFS untuk file sharing performance
+- ✅ Docker CLI access via TCP (tanpa socket mount - lebih clean!)
 
 **Install Colima:**
 ```bash
 # Install via Homebrew
 brew install colima docker docker-compose
-
-# Start Colima dengan host network support
-colima start --network host --cpu 4 --memory 8 --disk 60
-
-# Verify Docker berjalan
-docker ps
-docker info
 ```
+
+**Start Colima dengan Docker Daemon Exposed:**
+
+⚡ **PENTING:** Container ini menggunakan Docker CLI untuk manage containers di host. Agar Docker CLI di dalam container bisa connect ke host Docker daemon, Colima harus di-start dengan Docker daemon exposed via TCP:
+
+```bash
+# Start Colima dengan Docker daemon exposed
+colima start \
+  --vm-type=vz \
+  --vz-rosetta \
+  --network host \
+  --cpu 4 \
+  --memory 8 \
+  --engine-flags="--host=tcp://0.0.0.0:2375"
+
+# Verify Docker daemon exposed
+lsof -i :2375  # Should show docker-a listening
+
+# Test koneksi
+docker -H tcp://localhost:2375 ps
+```
+
+**📖 Setup Lengkap:** Lihat [COLIMA-SETUP.md](COLIMA-SETUP.md) untuk guide lengkap dan troubleshooting!
 
 **Colima Commands:**
 ```bash
@@ -91,6 +108,7 @@ colima default edit --runtime docker
 | Feature | Docker Desktop | Colima |
 |---------|---------------|---------|
 | `network_mode: host` | ❌ Limited support | ✅ Full support |
+| Docker CLI Access | Socket mount | DOCKER_HOST (cleaner) ✅ |
 | Resource Usage | High | Medium |
 | Performance | Medium | High |
 | Price | Paid (for teams) | Free |
@@ -102,6 +120,7 @@ colima default edit --runtime docker
 - Jika menggunakan Docker Desktop, `network_mode: host` mungkin tidak bekerja dengan baik
 - Sangat disarankan uninstall Docker Desktop sebelum install Colima
 - Atau disable Docker Desktop saat menggunakan Colima
+- **Docker daemon harus di-expose via TCP** agar Docker CLI di dalam container bisa connect
 
 **Migration dari Docker Desktop ke Colima:**
 ```bash
@@ -109,14 +128,21 @@ colima default edit --runtime docker
 # 2. Install Colima
 brew install colima docker docker-compose
 
-# 3. Start Colima
-colima start --network host --cpu 4 --memory 8
+# 3. Start Colima dengan Docker daemon exposed
+colima start --network host --cpu 4 --memory 8 --engine-flags="--host=tcp://0.0.0.0:2375"
 
 # 4. Test Docker integration
 docker run hello-world
 
-# 5. Jalankan container ini
+# 5. Test Docker daemon via TCP
+docker -H tcp://localhost:2375 ps
+
+# 6. Jalankan container ini
 docker-compose up -d --build
+
+# 7. Verify Docker CLI bekerja di dalam container
+docker exec -it claude-code-container bash
+docker ps  # Should list host containers!
 ```
 
 ## Apa yang Baru di 2026
@@ -523,10 +549,39 @@ cd /workspace/app3 && python app.py  # → http://localhost:5000
 Container dilengkapi dengan **Docker CLI** untuk manage containers di host/VPS:
 
 **Fitur:**
-- Docker client terinstall (Docker version 29.1.5)
-- Docker socket dari host di-mount ke container
-- Bisa manage semua containers/images di host dari dalam container
-- Perfect untuk deployment workflows
+- ✅ Docker client terinstall (Docker version 24.0+)
+- ✅ Connect ke host Docker daemon via **DOCKER_HOST** (clean approach!)
+- ✅ Tidak perlu socket mount - lebih secure dan mengikuti best practices
+- ✅ Bisa manage semua containers/images di host dari dalam container
+- ✅ Perfect untuk deployment workflows
+
+**Setup untuk Colima (macOS):**
+```bash
+# Start Colima dengan Docker daemon exposed
+colima start --network host --engine-flags="--host=tcp://0.0.0.0:2375"
+
+# Verify
+docker -H tcp://localhost:2375 ps
+
+# Container otomatis connect via DOCKER_HOST environment variable
+docker-compose up -d --build
+```
+
+**Setup untuk Linux:**
+```bash
+# Expose Docker daemon via TCP
+sudo systemctl edit docker
+# Add:
+# [Service]
+# ExecStart=
+# ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2375
+
+# Restart Docker
+sudo systemctl restart docker
+
+# Verify
+docker -H tcp://localhost:2375 ps
+```
 
 **Contoh Penggunaan:**
 ```bash
@@ -560,9 +615,12 @@ docker start some-container
 4. **Development Testing** - Test integration antar containers
 
 **Catatan:**
-- Container ini punya akses penuh ke Docker daemon di host
-- Gunakan dengan hati-hati - punya akses ke semua containers
-- Pastikan user permission sudah benar (user `claude` sudah di group `docker`)
+- Container connect ke host Docker daemon via `DOCKER_HOST=tcp://localhost:2375`
+- Lebih clean daripada socket mount (tidak perlu volume mount)
+- Gunakan dengan hati-hati - punya akses ke semua containers di host
+- Pastikan Docker daemon hanya accessible dari localhost (security best practice)
+
+**📖 Setup Lengkap:** Lihat [COLIMA-SETUP.md](COLIMA-SETUP.md) untuk guide lengkap Colima setup!
 
 ## Security Notes
 

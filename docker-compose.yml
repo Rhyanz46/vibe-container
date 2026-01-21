@@ -85,6 +85,11 @@ services:
       # Timezone
       - TZ=UTC
 
+      # ===== DOCKER DAEMON ACCESS =====
+      # Connect to host Docker daemon via TCP (Colima/Linux)
+      # No socket mount needed - cleaner and more secure!
+      - DOCKER_HOST=tcp://localhost:2375
+
     # ===== HOST NETWORK MODE =====
     # Use host network for automatic port exposure
     # All ports in container will be directly accessible on host
