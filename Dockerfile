@@ -162,8 +162,16 @@ RUN echo '# Source global definitions' >> /home/claude/.bashrc && \
     echo '}' >> /home/claude/.bashrc && \
     echo 'export PS1="\\u@\\h:\\w\\$ "' >> /home/claude/.bashrc && \
     echo '' >> /home/claude/.bashrc && \
+    echo '# Container environment context' >> /home/claude/.bashrc && \
+    echo 'export CONTAINER_ENV="isolated"' >> /home/claude/.bashrc && \
+    echo 'export NETWORK_MODE="host"' >> /home/claude/.bashrc && \
+    echo '' >> /home/claude/.bashrc && \
     echo '# Show welcome message' >> /home/claude/.bashrc && \
-    echo 'echo "🚀 Claude Code Dev Environment"' >> /home/claude/.bashrc && \
+    echo 'echo "🚀 Claude Code Dev Environment (Container)"' >> /home/claude/.bashrc && \
+    echo 'echo "==============================="' >> /home/claude/.bashrc && \
+    echo 'echo "⚠️  Environment: ISOLATED CONTAINER"' >> /home/claude/.bashrc && \
+    echo 'echo "ℹ️  Network Mode: Host (all ports exposed)"' >> /home/claude/.bashrc && \
+    echo 'echo "ℹ️  Docker Daemon: tcp://localhost:2375 (via host)"' >> /home/claude/.bashrc && \
     echo 'echo "==============================="' >> /home/claude/.bashrc && \
     echo 'echo "Go: $(go version 2>/dev/null | awk '"'"'{print $3}'"'"')"' >> /home/claude/.bashrc && \
     echo 'echo "Node.js: $(node --version 2>/dev/null) (Default: $(nvm version 2>/dev/null))"' >> /home/claude/.bashrc && \
@@ -210,6 +218,80 @@ ENV PATH="/home/claude/.local/bin:${PATH}"
 # Create working directory and set ownership
 WORKDIR /workspace
 RUN chown -R claude:claude /workspace
+
+# Create container context README for Claude AI
+RUN cat > /workspace/CONTAINER_CONTEXT.md << 'EOF'
+# Container Environment Context
+
+## ⚠️ IMPORTANT: You Are Running Inside an Isolated Container
+
+### Environment Type
+- **Containerized**: Yes, you are in a Docker container
+- **Isolation**: Process, filesystem, and resource isolated from host
+- **Network Mode**: Host (shares host network stack)
+
+### Key Implications
+
+1. **All Services Run on Host Machine**
+   - Any services you start (web servers, databases, APIs) run INSIDE this container
+   - To access services from OUTSIDE, they must be accessible via host network
+   - Ports are automatically exposed (host network mode)
+
+2. **Docker Access**
+   - Docker CLI is available via `docker` command
+   - Connects to HOST Docker daemon via: `tcp://localhost:2375`
+   - You can manage host containers from inside this container
+   - Example: `docker ps` shows containers running on HOST
+
+3. **Filesystem**
+   - `/workspace` is mounted from host directory
+   - Changes in `/workspace` reflect on host immediately
+   - All other directories are container-specific (except mounted volumes)
+
+4. **Network**
+   - Container shares host network stack
+   - `localhost` in container = `localhost` on host
+   - All ports are automatically exposed
+   - No port mapping needed
+
+5. **Development Workflow**
+   - Code in `/workspace` - synchronized with host
+   - Install dependencies inside container
+   - Run services inside container
+   - Access via `localhost` from host machine
+
+### Environment Variables
+- `CONTAINER_ENV=isolated` - Indicates containerized environment
+- `NETWORK_MODE=host` - Host networking mode
+- `DOCKER_HOST=tcp://localhost:2375` - Docker daemon connection
+
+### Quick Reference
+```bash
+# Check what's running on host
+docker ps
+
+# Run a service inside container (accessible from host)
+python -m http.server 8000  # Access from host: http://localhost:8000
+
+# Build and run Docker containers on host
+docker build -t myapp .
+docker run -d myapp
+
+# File operations in workspace sync to host
+echo "test" > /workspace/test.txt  # Visible on host
+```
+
+### Best Practices
+1. Install all dependencies inside container
+2. Run development servers inside container
+3. Access services via `localhost` from host
+4. Use Docker CLI to manage host containers
+5. Remember: Container processes ≠ Host processes (except Docker)
+
+### Support
+For issues or questions, check the main project README.
+EOF
+RUN chown claude:claude /workspace/CONTAINER_CONTEXT.md
 
 # Install Claude Code using the native installer
 USER claude

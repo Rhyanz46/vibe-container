@@ -82,6 +82,12 @@ services:
       # Timezone
       - TZ=UTC
 
+      # ===== CONTAINER CONTEXT =====
+      # Indicate that we're in an isolated container
+      # This helps Claude AI understand the environment
+      - CONTAINER_ENV=isolated
+      - NETWORK_MODE=host
+
       # ===== DOCKER DAEMON ACCESS =====
       # Connect to host Docker daemon via TCP (Colima/Linux)
       # No socket mount needed - cleaner and more secure!
