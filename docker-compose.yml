@@ -55,9 +55,6 @@ services:
       - ./data/.ssh:/home/claude/.ssh
 
       # ===== CUSTOM PROJECTS =====
-      # Mount elearning project folder
-      - /home/rhyanz46/elearning:/workspace/elearning
-
       # Mount web directory
       - /var/www/html/course.go-routine.com:/workspace/course.go-routine.com
 
