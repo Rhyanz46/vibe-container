@@ -266,7 +266,7 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '                echo "📦 Installing Flutter..."' >> /home/claude/.bash_profile && \
     echo '                cd ~ && git clone https://github.com/flutter/flutter.git -b stable --depth 1' >> /home/claude/.bash_profile && \
     echo '                echo "export PATH=\"\$HOME/flutter/bin:\$PATH\"" >> ~/.bashrc' >> /home/claude/.bash_profile && \
-    echo '                export PATH="\$HOME/flutter/bin:\$PATH"' >> /home/claude/.bash_profile && \
+    echo '                export PATH="$HOME/flutter/bin:$PATH"' >> /home/claude/.bash_profile && \
     echo '                flutter precache --web' >> /home/claude/.bash_profile && \
     echo '                echo ""' >> /home/claude/.bash_profile && \
     echo '                echo "✅ Flutter installed successfully!"' >> /home/claude/.bash_profile && \
@@ -303,7 +303,7 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '            if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/.bash_profile && \
     echo '                echo "📦 Installing Rust..."' >> /home/claude/.bash_profile && \
     echo '                curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y' >> /home/claude/.bash_profile && \
-    echo '                . "\$HOME/.cargo/env"' >> /home/claude/.bash_profile && \
+    echo '                . "$HOME/.cargo/env"' >> /home/claude/.bash_profile && \
     echo '                echo "source \$HOME/.cargo/env" >> ~/.bashrc' >> /home/claude/.bash_profile && \
     echo '                echo "✅ Rust installed successfully!"' >> /home/claude/.bash_profile && \
     echo '                echo "   Cargo: $(cargo --version)"' >> /home/claude/.bash_profile && \
@@ -633,7 +633,7 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '        echo "📦 Installing Flutter..."' >> /home/claude/entrypoint.sh && \
     echo '        cd ~ && git clone https://github.com/flutter/flutter.git -b stable --depth 1' >> /home/claude/entrypoint.sh && \
     echo '        echo "export PATH=\"\$HOME/flutter/bin:\$PATH\"" >> ~/.bashrc' >> /home/claude/entrypoint.sh && \
-    echo '        export PATH="\$HOME/flutter/bin:\$PATH"' >> /home/claude/entrypoint.sh && \
+    echo '        export PATH="$HOME/flutter/bin:$PATH"' >> /home/claude/entrypoint.sh && \
     echo '        flutter precache --web' >> /home/claude/entrypoint.sh && \
     echo '        echo ""' >> /home/claude/entrypoint.sh && \
     echo '        echo "✅ Flutter installed successfully!"' >> /home/claude/entrypoint.sh && \
@@ -670,7 +670,7 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '    if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/entrypoint.sh && \
     echo '        echo "📦 Installing Rust..."' >> /home/claude/entrypoint.sh && \
     echo '        curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y' >> /home/claude/entrypoint.sh && \
-    echo '        . "\$HOME/.cargo/env"' >> /home/claude/entrypoint.sh && \
+    echo '        . "$HOME/.cargo/env"' >> /home/claude/entrypoint.sh && \
     echo '        echo "source \$HOME/.cargo/env" >> ~/.bashrc' >> /home/claude/entrypoint.sh && \
     echo '        echo "✅ Rust installed successfully!"' >> /home/claude/entrypoint.sh && \
     echo '        echo "   Cargo: $(cargo --version)"' >> /home/claude/entrypoint.sh && \
