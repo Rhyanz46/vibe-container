@@ -535,6 +535,13 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '    chown -R claude:claude /workspace 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo 'fi' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
+    echo '# Fix .config directory ownership and create Flutter config directory' >> /home/claude/entrypoint.sh && \
+    echo 'chown -R claude:claude /home/claude/.config 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo 'mkdir -p /home/claude/.config/flutter 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo 'chown -R claude:claude /home/claude/.config/flutter 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo 'chmod 755 /home/claude/.config 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo 'chmod 755 /home/claude/.config/flutter 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo '' >> /home/claude/entrypoint.sh && \
     echo '# Run setup as claude user using sudo' >> /home/claude/entrypoint.sh && \
     echo 'sudo -u claude bash -s <<"EOF"' >> /home/claude/entrypoint.sh && \
     echo '# Auto-setup SSH key if not exists' >> /home/claude/entrypoint.sh && \
@@ -551,6 +558,11 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '# Ensure SSH key files have correct permissions (fix for mounted/existing keys)' >> /home/claude/entrypoint.sh && \
     echo 'chmod 600 /home/claude/.ssh/id_ed25519 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo 'chmod 644 /home/claude/.ssh/id_ed25519.pub 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo '' >> /home/claude/entrypoint.sh && \
+    echo '# Fix .config directory for Flutter' >> /home/claude/entrypoint.sh && \
+    echo 'mkdir -p ~/.config/flutter 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo 'chmod 755 ~/.config 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
+    echo 'chmod 755 ~/.config/flutter 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
     echo '# Setup git config if not exists' >> /home/claude/entrypoint.sh && \
     echo 'if [ ! -f /home/claude/.gitconfig ]; then' >> /home/claude/entrypoint.sh && \
