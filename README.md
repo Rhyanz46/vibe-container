@@ -768,6 +768,20 @@ docker-compose down -v
 docker rmi claude-code:latest
 ```
 
+## Known Issues & Fixes
+
+Documentation for known issues and their fixes:
+
+### Installation & Configuration Issues
+- **[PATH Corruption Fix](PATH_CORRUPTION_FIX.md)** - Fix for "command not found" errors after installing Flutter, Rust, or Java
+- **[Flutter Config Permission Fix](FLUTTER_CONFIG_FIX.md)** - Fix for Flutter `.config/flutter` directory permission errors
+
+### Docker Daemon Setup
+- **[Docker Daemon TCP Setup](DOCKER_DAEMON_SETUP.md)** - Configure Docker daemon for container access (Linux/VPS)
+
+### Deployment Guides
+- **[VPS Deployment Guide](VPS-DEPLOYMENT-GUIDE.md)** - Complete guide for deploying to VPS (prerequisites, setup, security)
+
 ## Resources
 
 - [Claude Code Official Documentation](https://code.claude.com/docs/en/setup)
@@ -777,6 +791,13 @@ docker rmi claude-code:latest
 - [Node.js 20 LTS Documentation](https://nodejs.org/docs/latest-v20.x/)
 
 ## Changelog
+
+### Version 2026.1.3 (January 2026)
+- **Add Known Issues & Fixes section** - Links to comprehensive troubleshooting documentation
+- **PATH Corruption Fix** - Fixed variable expansion in Flutter/Rust/Java installation
+- **Flutter Config Permission Fix** - Fixed `.config/flutter` directory ownership issue
+- **VPS Deployment Guide** - Complete guide for deploying to VPS with Docker daemon setup
+- **Docker Daemon TCP Setup** - Documentation for Docker daemon configuration
 
 ### Version 2026.1.2 (January 2026)
 - **Add Python 3.12.3 + pip 24.0** - Full Python development support
