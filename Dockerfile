@@ -356,7 +356,8 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '            if [[ $REPLY =~ ^[Yy]$ ]]; then' >> /home/claude/.bash_profile && \
     echo '                echo "📦 Installing Docker CLI..."' >> /home/claude/.bash_profile && \
     echo '                curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz | tar xz -C /tmp &&' >> /home/claude/.bash_profile && \
-    echo '                sudo mv /tmp/docker /usr/local/bin/ &&' >> /home/claude/.bash_profile && \
+    echo '                sudo mv /tmp/docker/docker /usr/local/bin/ &&' >> /home/claude/.bash_profile && \
+    echo '                sudo rm -rf /tmp/docker &&' >> /home/claude/.bash_profile && \
     echo '                sudo chmod +x /usr/local/bin/docker &&' >> /home/claude/.bash_profile && \
     echo '                echo ""' >> /home/claude/.bash_profile && \
     echo '                echo "✅ Docker CLI installed successfully!"' >> /home/claude/.bash_profile && \
