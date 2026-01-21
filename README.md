@@ -7,17 +7,19 @@ Docker container berbasis Ubuntu 24.04 LTS (2026) untuk menjalankan Claude Code 
 - Ubuntu 24.04 LTS (Noble Numbat) - Terbaru dan lebih stabil
 - Claude Code terinstall secara native (latest version)
 - **Golang 1.23.5** - Latest Go version dengan development tools
+- **Python 3.12.3** dengan **pip 24.0** - Python development lengkap
 - **NVM 0.40.1** - Node Version Manager untuk multi-version Node.js
 - **Node.js 20, 22, 25** - Multiple LTS dan current versions pre-installed
 - **npm** - Package manager untuk Node.js
 - **Go tools** - goimports, gotests, gomock, staticcheck
+- **Playwright & Playwright MCP** - Browser automation & AI integration
 - **Bash completion** - Autocomplete untuk git, go, npm, docker, etc.
 - ripgrep untuk search functionality
 - Non-root user untuk security
 - Persistent volumes untuk config dan cache
 - Build tools dan development utilities lengkap
 - Optimasi untuk Docker dengan containerd 2.0 support
-- **Docker CLI** - Docker client untuk manage containers di host
+- **Docker CLI** - Docker client untuk manage containers di host via DOCKER_HOST
 - **Host Network Mode** - Semua port otomatis ke-expose ke host (perfect untuk development!)
 
 ## Persyaratan
@@ -149,15 +151,18 @@ docker ps  # Should list host containers!
 
 - **Ubuntu 24.04 LTS** - Lebih stabil dengan containerd 2.0 support
 - **Golang 1.23.5** - Latest Go dengan development tools lengkap
+- **Python 3.12.3 + pip 24.0** - Python development dengan package management
 - **NVM 0.40.1** - Node Version Manager untuk switch Node versions dengan mudah
 - **Node.js Multi-Version** - v20.20.0 (LTS), v22.22.0 (LTS), v25.4.0 (Current) pre-installed
 - **Bash Completion** - Full autocomplete support untuk semua command
 - **Go Development Tools** - goimports, gotests, gomock, staticcheck pre-installed
+- **Playwright & Playwright MCP** - Browser automation dengan AI integration
 - **Security improvements** - Non-root user dengan sudo access
 - **Better tooling** - wget, jq, unzip untuk enhanced functionality
 - **Optimized layers** - Lebih kecil image size dan faster build times
-- **Docker CLI** - Docker client untuk manage containers di host/VPS
+- **Docker CLI via DOCKER_HOST** - Clean approach tanpa socket mount
 - **Host Network Mode** - Automatic port exposure untuk development apps
+- **SSH Key Auto-generation** - SSH keys otomatis dibuat untuk git operations
 
 ## Cara Build dan Run
 
@@ -184,6 +189,7 @@ Semua data disimpan di directory `./data/` (sejajar dengan docker-compose.yml):
 - `./data/.local/share/claude/` - Conversations dan cache
 - `./data/.mcp/` - MCP server configurations
 - `./data/.npm/` - npm package cache
+- `./data/.ssh/` - SSH keys (auto-generated)
 - `./data/go/` - Go workspace dan packages
 - `./data/.cache/go-build/` - Go build cache
 
@@ -283,6 +289,7 @@ Semua data Claude Code dan development tools disimpan di directory `./data/`:
 | `./data/.local/share/claude/` | `/home/claude/.local/share/claude` | Cache & conversations |
 | `./data/.mcp/` | `/home/claude/.mcp` | MCP configs |
 | `./data/.npm/` | `/home/claude/.npm` | npm cache |
+| `./data/.ssh/` | `/home/claude/.ssh` | SSH keys |
 | `./data/go/` | `/home/claude/go` | Go workspace & packages |
 | `./data/.cache/go-build/` | `/home/claude/.cache/go-build` | Go build cache |
 
@@ -410,19 +417,62 @@ cd /workspace/project
 nvm use
 ```
 
+### Python 3.12.3 dengan pip
+
+Container sudah terinstall dengan Python 3.12.3 dan pip 24.0:
+
+**Python Environment:**
+```bash
+# Cek Python version
+docker exec claude-code-container python3 --version
+
+# Cek pip version
+docker exec claude-code-container python3 -m pip --version
+
+# Python environment
+# Python: /usr/bin/python3
+# pip: /usr/bin/python3 -m pip
+```
+
+**Python Development Commands:**
+```bash
+# Install Python package
+docker exec claude-code-container python3 -m pip install package-name --break-system-packages
+
+# Install dari requirements.txt
+docker exec claude-code-container python3 -m pip install -r requirements.txt --break-system-packages
+
+# Run Python script
+docker exec claude-code-container python3 script.py
+
+# Check installed packages
+docker exec claude-code-container python3 -m pip list
+
+# Create virtual environment
+docker exec -it claude-code-container bash
+python3 -m venv /path/to/venv
+source /path/to/venv/bin/activate
+pip install package-name
+```
+
+**Note:** Untuk menghindari PEP 668 warning (externally-managed-environment), gunakan flag `--break-system-packages` atau buat virtual environment.
+
 ### Multi-Language Development
 
-Container mendukung development dengan Go dan Node.js secara bersamaan:
+Container mendukung development dengan Go, Node.js, dan Python secara bersamaan:
 
 ```bash
-# Contoh: Fullstack project dengan Go backend dan Node.js frontend
+# Contoh: Fullstack project dengan Go backend, Node.js frontend, dan Python ML
 workspace/
 ├── backend/          # Go API
 │   ├── main.go
 │   └── go.mod
-└── frontend/         # Node.js/React app
-    ├── package.json
-    └── src/
+├── frontend/         # Node.js/React app
+│   ├── package.json
+│   └── src/
+└── ml-service/       # Python ML service
+    ├── app.py
+    └── requirements.txt
 ```
 
 **Commands:**
@@ -431,10 +481,12 @@ workspace/
 docker exec -it claude-code-container bash
 cd /workspace/backend && go run main.go
 cd /workspace/frontend && npm run dev
+cd /workspace/ml-service && python3 -m pip install -r requirements.txt --break-system-packages
 
 # Testing
 docker exec claude-code-container bash -c "cd backend && go test ./..."
 docker exec claude-code-container bash -c "cd frontend && npm test"
+docker exec claude-code-container bash -c "cd ml-service && python3 -m pytest"
 
 # Building
 docker exec claude-code-container bash -c "cd backend && go build -o api"
@@ -725,6 +777,14 @@ docker rmi claude-code:latest
 - [Node.js 20 LTS Documentation](https://nodejs.org/docs/latest-v20.x/)
 
 ## Changelog
+
+### Version 2026.1.2 (January 2026)
+- **Add Python 3.12.3 + pip 24.0** - Full Python development support
+- **Add Playwright MCP** - Browser automation dengan AI integration
+- **Docker CLI via DOCKER_HOST** - Clean approach tanpa socket mount
+- **Add comprehensive Colima setup guide** - COLIMA-SETUP.md for macOS users
+- **SSH key auto-generation** - Automatic SSH key creation untuk git operations
+- **Network monitoring script** - check-container-network.sh for debugging
 
 ### Version 2026.1 (January 2026)
 - Upgrade to Ubuntu 24.04 LTS base image
