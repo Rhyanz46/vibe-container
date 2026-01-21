@@ -219,8 +219,8 @@ ENV PATH="/home/claude/.local/bin:${PATH}"
 WORKDIR /workspace
 RUN chown -R claude:claude /workspace
 
-# Create container context README for Claude AI
-RUN cat > /workspace/CONTAINER_CONTEXT.md << 'EOF'
+# Create container context README for Claude AI (in home directory to avoid mount conflicts)
+RUN cat > /home/claude/CONTAINER_CONTEXT.md << 'EOF'
 # Container Environment Context
 
 ## ⚠️ IMPORTANT: You Are Running Inside an Isolated Container
@@ -291,7 +291,7 @@ echo "test" > /workspace/test.txt  # Visible on host
 ### Support
 For issues or questions, check the main project README.
 EOF
-RUN chown claude:claude /workspace/CONTAINER_CONTEXT.md
+RUN chown claude:claude /home/claude/CONTAINER_CONTEXT.md
 
 # Install Claude Code using the native installer
 USER claude
