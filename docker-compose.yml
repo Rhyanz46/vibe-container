@@ -79,6 +79,10 @@ services:
       # Timezone
       - TZ=UTC
 
+      # ===== TERMINAL COLOR SUPPORT =====
+      # Set proper TERM for color support in CLI applications
+      - TERM=${TERM:-xterm-256color}
+
       # ===== CONTAINER CONTEXT =====
       # Indicate that we're in an isolated container
       # This helps Claude AI understand the environment

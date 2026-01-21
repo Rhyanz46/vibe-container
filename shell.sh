@@ -19,4 +19,9 @@ fi
 # Enter the container with login shell to trigger entrypoint
 echo "🚀 Entering Claude Code container..."
 echo ""
-docker exec -it ${CONTAINER_NAME} bash -l
+
+# Set proper TERM for color support
+export TERM="${TERM:-xterm-256color}"
+
+# Enter container with proper TERM for color support
+docker exec -it -e TERM="${TERM}" ${CONTAINER_NAME} bash -l
