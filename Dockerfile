@@ -422,10 +422,21 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo '        cd ~ && git clone https://github.com/flutter/flutter.git -b stable --depth 1' >> /home/claude/entrypoint.sh && \
     echo '        echo "export PATH=\"\$HOME/flutter/bin:\$PATH\"" >> ~/.bashrc' >> /home/claude/entrypoint.sh && \
     echo '        export PATH="\$HOME/flutter/bin:\$PATH"' >> /home/claude/entrypoint.sh && \
-    echo '        flutter precache' >> /home/claude/entrypoint.sh && \
-    echo '        echo "✅ Flutter installed successfully!"' >> /home/claude/entrypoint.sh && \
+    echo '        flutter precache --web' >> /home/claude/entrypoint.sh && \
     echo '        echo ""' >> /home/claude/entrypoint.sh && \
-    echo '        echo "💡 Run: flutter doctor to check setup"' >> /home/claude/entrypoint.sh && \
+    echo '        echo "✅ Flutter installed successfully!"' >> /home/claude/entrypoint.sh && \
+    echo '        echo "   Version: $(flutter --version 2>&1 | head -1)"' >> /home/claude/entrypoint.sh && \
+    echo '        echo ""' >> /home/claude/entrypoint.sh && \
+    echo '        echo "🔧 Components installed:"' >> /home/claude/entrypoint.sh && \
+    echo '        echo "   ✅ Flutter SDK (stable channel)"' >> /home/claude/entrypoint.sh && \
+    echo '        echo "   ✅ Dart SDK (included in Flutter)"' >> /home/claude/entrypoint.sh && \
+    echo '        echo "   ✅ Web build tools"' >> /home/claude/entrypoint.sh && \
+    echo '        echo ""' >> /home/claude/entrypoint.sh && \
+    echo '        echo "⚠️  For mobile development, additional setup needed:"' >> /home/claude/entrypoint.sh && \
+    echo '        echo "   1. flutter doctor" >> /home/claude/entrypoint.sh && \
+    echo '        echo "   2. flutter doctor --android-licenses  (for Android)"' >> /home/claude/entrypoint.sh && \
+    echo '        echo ""' >> /home/claude/entrypoint.sh && \
+    echo '        echo "💡 Desktop platforms (Linux/Windows/macOS) work out of the box!"' >> /home/claude/entrypoint.sh && \
     echo '    else' >> /home/claude/entrypoint.sh && \
     echo '        echo "⏭️  Skipping Flutter installation"' >> /home/claude/entrypoint.sh && \
     echo '    fi' >> /home/claude/entrypoint.sh && \
