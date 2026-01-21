@@ -96,12 +96,13 @@ services:
     # Perfect for development - no port mapping needed!
     network_mode: host
 
-    # Resource limits (optimized for 2026 standards)
-    deploy:
-      resources:
-        limits:
-          memory: 6G
-          cpus: '3'
+    # Note: No resource limits set - container can use all available host resources
+    # Remove this section if you want to add limits back
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 6G
+    #       cpus: '3'
 
     # Health check (optional but recommended)
     healthcheck:
