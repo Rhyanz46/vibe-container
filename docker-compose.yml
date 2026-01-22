@@ -22,6 +22,14 @@ services:
 
     # Mount volumes for persistent data
     volumes:
+      # ===== GPU/DISPLAY ACCESS (For hardware acceleration) =====
+      # X11 socket for GUI applications and hardware rendering
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # DRI devices for GPU hardware acceleration (only if available on host)
+      # - /dev/dri:/dev/dri:rw
+      # X11 authority file (optional - uncomment if you get X11 authentication errors)
+      # - ${HOME}/.Xauthority:/home/claude/.Xauthority:ro
+
       # ===== CLAUDE CODE DATA IN CURRENT DIRECTORY =====
       # All data stored in subdirectories next to docker-compose.yml
 
@@ -68,6 +76,12 @@ services:
       # Kotlin compiler and SDK
       - ./data/.kotlin:/home/claude/.kotlin
 
+      # ===== OPTIONAL TOOLS (Persistent) =====
+      # Java OpenJDK (optional, keeps image small)
+      - ./data/.java:/home/claude/.java
+      # Docker CLI (optional, keeps image small)
+      - ./data/.docker:/home/claude/.docker
+
       # ===== PLAYWRIGHT DATA =====
       # Playwright browsers (Chromium, Firefox, WebKit)
       - ./data/.cache/ms-playwright:/home/claude/.cache/ms-playwright
@@ -87,9 +101,34 @@ services:
     # Working directory inside container
     working_dir: /home/claude/workspace
 
+    # ===== DEVICE ACCESS FOR HARDWARE ACCELERATION =====
+    # Uncomment below if you have DRI devices on your host
+    # devices:
+    #   # DRI (Direct Rendering Infrastructure) for GPU access (if available)
+    #   - /dev/dri/card0:/dev/dri/card0
+    #   - /dev/dri/renderD128:/dev/dri/renderD128
+    #   # Video acceleration devices (optional, for hardware video decoding)
+    #   - /dev/video0:/dev/video0
+
+    # ===== GPU RUNTIME (NVIDIA/AMD) =====
+    # Uncomment if using NVIDIA GPU and nvidia-docker installed
+    # runtime: nvidia
+
     # Environment variables
     environment:
+      # ===== DISPLAY SERVER =====
       - DISPLAY=${DISPLAY:-:0}
+      # X11 authority file for display authentication
+      - XAUTHORITY=${XAUTHORITY:-/home/claude/.Xauthority}
+
+      # ===== HARDWARE ACCELERATION =====
+      # Enable hardware acceleration for browsers and GUI apps
+      # Only works if GPU is available, otherwise falls back to software rendering
+      - LIBGL_ALWAYS_SOFTWARE=${LIBGL_ALWAYS_SOFTWARE:-0}
+      # For NVIDIA GPUs (uncomment if you have NVIDIA)
+      # - __NV_PRIME_RENDER_OFFLOAD=1
+      # - __GLX_VENDOR_LIBRARY_NAME=nvidia
+
       # Disable auto-updates inside container (recommended)
       - DISABLE_AUTOUPDATER=1
       # Node.js environment
@@ -155,6 +194,8 @@ services:
 # ./data/.cargo/                 - Cargo packages and crates (persistent installation)
 # ./data/.rustup/                - Rustup toolchains (persistent installation)
 # ./data/.kotlin/                - Kotlin compiler and SDK (persistent installation)
+# ./data/.java/                  - Java OpenJDK (persistent installation)
+# ./data/.docker/                - Docker CLI (persistent installation)
 #
-# Note: Java (OpenJDK) and Docker CLI are installed in system directories (/usr/lib/jvm, /usr/local/bin)
-# These persist in the Docker image layer and don't need separate volumes
+# Note: Java and Docker CLI now use persistent volumes instead of system directories
+# This keeps the Docker image small while maintaining persistence across rebuilds

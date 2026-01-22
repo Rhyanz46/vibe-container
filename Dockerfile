@@ -151,6 +151,17 @@ RUN echo '# Source global definitions' >> /home/claude/.bashrc && \
     echo '# Go environment' >> /home/claude/.bashrc && \
     echo 'export PATH=/home/claude/go/bin:$PATH' >> /home/claude/.bashrc && \
     echo '' >> /home/claude/.bashrc && \
+    echo '# Java environment (persistent in ~/.java)' >> /home/claude/.bashrc && \
+    echo 'if [ -d "$HOME/.java" ]; then' >> /home/claude/.bashrc && \
+    echo '    export JAVA_HOME="$HOME/.java/java-21-openjdk-amd64"' >> /home/claude/.bashrc && \
+    echo '    export PATH="$JAVA_HOME/bin:$PATH"' >> /home/claude/.bashrc && \
+    echo 'fi' >> /home/claude/.bashrc && \
+    echo '' >> /home/claude/.bashrc && \
+    echo '# Docker CLI (persistent in ~/.docker)' >> /home/claude/.bashrc && \
+    echo 'if [ -d "$HOME/.docker" ]; then' >> /home/claude/.bashrc && \
+    echo '    export PATH="$HOME/.docker:$PATH"' >> /home/claude/.bashrc && \
+    echo 'fi' >> /home/claude/.bashrc && \
+    echo '' >> /home/claude/.bashrc && \
     echo '# Colorful prompt (better for light/dark mode)' >> /home/claude/.bashrc && \
     echo 'export PROMPT_DIRTY="*"' >> /home/claude/.bashrc && \
     echo 'export PROMPT_COMMAND=''""' >> /home/claude/.bashrc && \
@@ -192,6 +203,16 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '# Source .bashrc if it exists' >> /home/claude/.bash_profile && \
     echo 'if [ -f ~/.bashrc ]; then' >> /home/claude/.bash_profile && \
     echo '    source ~/.bashrc' >> /home/claude/.bash_profile && \
+    echo 'fi' >> /home/claude/.bash_profile && \
+    echo '' >> /home/claude/.bash_profile && \
+    echo '# Java and Docker CLI (persistent volumes)' >> /home/claude/.bash_profile && \
+    echo '# Load from persistent storage if available' >> /home/claude/.bash_profile && \
+    echo 'if [ -d "$HOME/.java" ]; then' >> /home/claude/.bash_profile && \
+    echo '    export JAVA_HOME="$HOME/.java/java-21-openjdk-amd64"' >> /home/claude/.bash_profile && \
+    echo '    export PATH="$JAVA_HOME/bin:$PATH"' >> /home/claude/.bash_profile && \
+    echo 'fi' >> /home/claude/.bash_profile && \
+    echo 'if [ -d "$HOME/.docker" ]; then' >> /home/claude/.bash_profile && \
+    echo '    export PATH="$HOME/.docker:$PATH"' >> /home/claude/.bash_profile && \
     echo 'fi' >> /home/claude/.bash_profile && \
     echo '' >> /home/claude/.bash_profile && \
     echo '# Only show welcome message and prompts in interactive login shell' >> /home/claude/.bash_profile && \
@@ -546,7 +567,7 @@ RUN echo '#!/bin/bash' > /home/claude/entrypoint.sh && \
     echo 'fi' >> /home/claude/entrypoint.sh && \
     echo '' >> /home/claude/entrypoint.sh && \
     echo '# Fix Claude Code data directories ownership to prevent permission errors' >> /home/claude/entrypoint.sh && \
-    echo 'for dir in .claude .local .npm .nvm .ssh go .cache .mcp flutter .cargo .rustup .kotlin workspace; do' >> /home/claude/entrypoint.sh && \
+    echo 'for dir in .claude .local .npm .nvm .ssh go .cache .mcp flutter .cargo .rustup .kotlin .java .docker workspace; do' >> /home/claude/entrypoint.sh && \
     echo '    if [ -d /home/claude/$dir ]; then' >> /home/claude/entrypoint.sh && \
     echo '        chown -R claude:claude /home/claude/$dir 2>/dev/null || true' >> /home/claude/entrypoint.sh && \
     echo '    fi' >> /home/claude/entrypoint.sh && \
