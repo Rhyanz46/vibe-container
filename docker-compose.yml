@@ -20,11 +20,8 @@ services:
     # This improves security by following the principle of least privilege
     user: "1001:1001"
 
-    # Mount your project directory into the container
+    # Mount volumes for persistent data
     volumes:
-      # Mount current directory to /workspace
-      - .:/workspace
-
       # ===== CLAUDE CODE DATA IN CURRENT DIRECTORY =====
       # All data stored in subdirectories next to docker-compose.yml
 
@@ -53,10 +50,6 @@ services:
       # ===== SSH FOR GIT OPERATIONS =====
       # SSH keys persistent storage
       - ./data/.ssh:/home/claude/.ssh
-
-      # ===== CUSTOM PROJECTS =====
-      # Mount web directory
-      - /var/www/html/course.go-routine.com:/workspace/course.go-routine.com
 
       # Optional: Mount git config from host
       # Uncomment to use your host's git configuration
@@ -119,12 +112,14 @@ services:
 # Note: networks section removed because we're using host network mode
 # With host network, container shares the host's network stack directly
 
-# Note: No named volumes needed - all data stored in ./data/ directory
+# Note: No named volumes needed - all Claude Code data stored in ./data/ directory
+# Workspace (/workspace) is stored in container filesystem (not mounted from host)
 # Data structure:
 # ./data/.claude/           - Claude Code config (API keys, settings)
 # ./data/.local/            - Claude Code local files
 # ./data/.local/share/claude/ - Conversations, cache
 # ./data/.mcp/              - MCP server configs
 # ./data/.npm/              - npm package cache
+# ./data/.ssh/              - SSH keys (git operations)
 # ./data/go/                - Go workspace and packages
 # ./data/.cache/go-build/   - Go build cache
