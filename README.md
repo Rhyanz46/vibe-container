@@ -768,6 +768,61 @@ docker-compose down -v
 docker rmi claude-code:latest
 ```
 
+## Optional Tools Installation
+
+Beberapa development tools tersedia secara opsional dan dapat di-install jika dibutuhkan:
+
+### Java (OpenJDK 21)
+
+**Untuk install Java:**
+```bash
+docker exec -it claude-code-container bash
+
+# Install OpenJDK 21
+sudo apt-get update
+sudo apt-get install -y openjdk-21-jdk
+
+# Verify
+java -version
+```
+
+**Use cases:**
+- Android development
+- Backend Java development
+- Enterprise applications
+- Kotlin development (via Kotlin compiler)
+
+### Docker CLI
+
+**Untuk install Docker CLI:**
+```bash
+docker exec -it claude-code-container bash
+
+# Download dan install Docker CLI
+curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz | tar xz -C /tmp
+sudo mv /tmp/docker/docker /usr/local/bin/
+sudo rm -rf /tmp/docker
+sudo chmod +x /usr/local/bin/docker
+
+# Verify
+docker --version
+docker ps  # Should list host containers
+```
+
+**Use cases:**
+- Build Docker images dari dalam container
+- Manage containers di host
+- CI/CD workflows
+- Container orchestration
+
+**⚠️ Penting:**
+- Java dan Docker CLI ini **TIDAK persistent** - perlu di-install ulang setelah container rebuild
+- Untuk membuat persistent, pertimbangkan untuk commit container sebagai image baru:
+  ```bash
+  docker commit claude-code-container claude-code:2026.1-with-tools
+  ```
+- Lalu update docker-compose.yml untuk menggunakan image tersebut
+
 ## Known Issues & Fixes
 
 Documentation for known issues and their fixes:
@@ -791,6 +846,12 @@ Documentation for known issues and their fixes:
 - [Node.js 20 LTS Documentation](https://nodejs.org/docs/latest-v20.x/)
 
 ## Changelog
+
+### Version 2026.1.4 (January 2026)
+- **Add Optional Tools Installation section** - Documentation for Java and Docker CLI installation
+- **Tool detection improvement** - Better detection for persistent tools (Flutter, Rust, NVM)
+- **Persistent NVM mount** - Fixed NVM persistence across container rebuilds
+- **All development tools now persistent** - Flutter, Rust, NVM, Playwright MCP survive rebuilds
 
 ### Version 2026.1.3 (January 2026)
 - **Add Known Issues & Fixes section** - Links to comprehensive troubleshooting documentation
