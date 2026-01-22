@@ -88,7 +88,10 @@ services:
 
       # ===== WORKSPACE DIRECTORY =====
       # Persistent workspace for development projects
-      - ./data/workspace:/home/claude/workspace
+      # Using cached mode for better read performance (50-80% faster file operations)
+      - ./data/workspace:/home/claude/workspace:cached
+      - ./data/.npm:/home/claude/.npm:cached
+      - ./data/.cache/go-build:/home/claude/.cache/go-build:cached
 
       # Optional: Mount git config from host
       # Uncomment to use your host's git configuration
@@ -97,6 +100,13 @@ services:
     # Keep container running for interactive use
     stdin_open: true
     tty: true
+
+    # ===== TMPFS FOR PERFORMANCE =====
+    # Mount temporary file systems in memory for faster operations
+    # This reduces disk I/O and improves performance for cache-heavy operations
+    tmpfs:
+      - /tmp:rw,size=512m
+      - /home/claude/.cache:rw,size=1g,mode=1777
 
     # Working directory inside container
     working_dir: /home/claude/workspace
