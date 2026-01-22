@@ -222,9 +222,11 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '        echo ""' >> /home/claude/.bash_profile && \
     echo '' >> /home/claude/.bash_profile && \
     echo '        # Check and offer Playwright MCP installation' >> /home/claude/.bash_profile && \
-    echo '        if ! command -v npx &> /dev/null; then' >> /home/claude/.bash_profile && \
-    echo '            echo "⚠️  npx not found. Skipping Playwright MCP installation."' >> /home/claude/.bash_profile && \
-    echo '        elif npm list -g playwright-mcp &> /dev/null; then' >> /home/claude/.bash_profile && \
+    echo '        # Load NVM first to ensure npm/npx are available' >> /home/claude/.bash_profile && \
+    echo '        if [ -s "$NVM_DIR/nvm.sh" ]; then' >> /home/claude/.bash_profile && \
+    echo '            . "$NVM_DIR/nvm.sh"' >> /home/claude/.bash_profile && \
+    echo '        fi' >> /home/claude/.bash_profile && \
+    echo '        if npm list -g playwright-mcp &> /dev/null; then' >> /home/claude/.bash_profile && \
     echo '            echo "✅ Playwright MCP already installed"' >> /home/claude/.bash_profile && \
     echo '        else' >> /home/claude/.bash_profile && \
     echo '            echo ""' >> /home/claude/.bash_profile && \
