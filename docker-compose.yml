@@ -69,6 +69,10 @@ services:
       # Playwright browsers (Chromium, Firefox, WebKit)
       - ./data/.cache/ms-playwright:/home/claude/.cache/ms-playwright
 
+      # ===== WORKSPACE DIRECTORY =====
+      # Persistent workspace for development projects
+      - ./data/workspace:/home/claude/workspace
+
       # Optional: Mount git config from host
       # Uncomment to use your host's git configuration
       # - ~/.gitconfig:/home/claude/.gitconfig:ro
@@ -78,7 +82,7 @@ services:
     tty: true
 
     # Working directory inside container
-    working_dir: /workspace
+    working_dir: /home/claude/workspace
 
     # Environment variables
     environment:
@@ -131,8 +135,9 @@ services:
 # With host network, container shares the host's network stack directly
 
 # Note: No named volumes needed - all Claude Code data stored in ./data/ directory
-# Workspace (/workspace) is stored in container filesystem (not mounted from host)
+# Workspace is mounted from host at ./data/workspace for persistent development
 # Data structure:
+# ./data/workspace/              - Development workspace (persistent projects)
 # ./data/.claude/                - Claude Code config (API keys, settings)
 # ./data/.local/                 - Claude Code local files
 # ./data/.local/share/claude/   - Conversations, cache
