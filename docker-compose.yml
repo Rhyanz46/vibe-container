@@ -51,6 +51,16 @@ services:
       # SSH keys persistent storage
       - ./data/.ssh:/home/claude/.ssh
 
+      # ===== FLUTTER DEVELOPMENT DATA =====
+      # Flutter SDK and Dart SDK
+      - ./data/flutter:/home/claude/flutter
+
+      # ===== RUST DEVELOPMENT DATA =====
+      # Cargo package manager and crates
+      - ./data/.cargo:/home/claude/.cargo
+      # Rustup toolchain installer
+      - ./data/.rustup:/home/claude/.rustup
+
       # Optional: Mount git config from host
       # Uncomment to use your host's git configuration
       # - ~/.gitconfig:/home/claude/.gitconfig:ro
@@ -123,3 +133,6 @@ services:
 # ./data/.ssh/              - SSH keys (git operations)
 # ./data/go/                - Go workspace and packages
 # ./data/.cache/go-build/   - Go build cache
+# ./data/flutter/           - Flutter SDK (persistent installation)
+# ./data/.cargo/            - Cargo packages and crates (persistent installation)
+# ./data/.rustup/           - Rustup toolchains (persistent installation)
