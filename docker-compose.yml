@@ -61,6 +61,14 @@ services:
       # Rustup toolchain installer
       - ./data/.rustup:/home/claude/.rustup
 
+      # ===== KOTLIN DEVELOPMENT DATA =====
+      # Kotlin compiler and SDK
+      - ./data/.kotlin:/home/claude/.kotlin
+
+      # ===== PLAYWRIGHT DATA =====
+      # Playwright browsers (Chromium, Firefox, WebKit)
+      - ./data/.cache/ms-playwright:/home/claude/.cache/ms-playwright
+
       # Optional: Mount git config from host
       # Uncomment to use your host's git configuration
       # - ~/.gitconfig:/home/claude/.gitconfig:ro
@@ -125,14 +133,19 @@ services:
 # Note: No named volumes needed - all Claude Code data stored in ./data/ directory
 # Workspace (/workspace) is stored in container filesystem (not mounted from host)
 # Data structure:
-# ./data/.claude/           - Claude Code config (API keys, settings)
-# ./data/.local/            - Claude Code local files
-# ./data/.local/share/claude/ - Conversations, cache
-# ./data/.mcp/              - MCP server configs
-# ./data/.npm/              - npm package cache
-# ./data/.ssh/              - SSH keys (git operations)
-# ./data/go/                - Go workspace and packages
-# ./data/.cache/go-build/   - Go build cache
-# ./data/flutter/           - Flutter SDK (persistent installation)
-# ./data/.cargo/            - Cargo packages and crates (persistent installation)
-# ./data/.rustup/           - Rustup toolchains (persistent installation)
+# ./data/.claude/                - Claude Code config (API keys, settings)
+# ./data/.local/                 - Claude Code local files
+# ./data/.local/share/claude/   - Conversations, cache
+# ./data/.mcp/                   - MCP server configs
+# ./data/.npm/                   - npm package cache
+# ./data/.ssh/                   - SSH keys (git operations)
+# ./data/go/                     - Go workspace and packages
+# ./data/.cache/go-build/        - Go build cache
+# ./data/.cache/ms-playwright/   - Playwright browsers (persistent installation)
+# ./data/flutter/                - Flutter SDK (persistent installation)
+# ./data/.cargo/                 - Cargo packages and crates (persistent installation)
+# ./data/.rustup/                - Rustup toolchains (persistent installation)
+# ./data/.kotlin/                - Kotlin compiler and SDK (persistent installation)
+#
+# Note: Java (OpenJDK) and Docker CLI are installed in system directories (/usr/lib/jvm, /usr/local/bin)
+# These persist in the Docker image layer and don't need separate volumes
