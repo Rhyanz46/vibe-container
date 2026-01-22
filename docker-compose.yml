@@ -40,6 +40,9 @@ services:
       # npm cache for Node.js packages
       - ./data/.npm:/home/claude/.npm
 
+      # NVM (Node Version Manager) for globally installed npm packages
+      - ./data/.nvm:/home/claude/.nvm
+
       # ===== GO DEVELOPMENT DATA =====
       # Go workspace and packages
       - ./data/go:/home/claude/go
@@ -143,6 +146,7 @@ services:
 # ./data/.local/share/claude/   - Conversations, cache
 # ./data/.mcp/                   - MCP server configs
 # ./data/.npm/                   - npm package cache
+# ./data/.nvm/                   - NVM (Node Version Manager) and globally installed npm packages
 # ./data/.ssh/                   - SSH keys (git operations)
 # ./data/go/                     - Go workspace and packages
 # ./data/.cache/go-build/        - Go build cache
