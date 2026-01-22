@@ -254,7 +254,10 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '        fi' >> /home/claude/.bash_profile && \
     echo '' >> /home/claude/.bash_profile && \
     echo '        # Check and offer Flutter installation' >> /home/claude/.bash_profile && \
-    echo '        if ! command -v flutter &> /dev/null; then' >> /home/claude/.bash_profile && \
+    echo '        # Check directory existence instead of command (more reliable for persistent storage)' >> /home/claude/.bash_profile && \
+    echo '        if [ -d ~/flutter ]; then' >> /home/claude/.bash_profile && \
+    echo '            echo "✅ Flutter already installed (persistent in ~/flutter)"' >> /home/claude/.bash_profile && \
+    echo '        elif ! command -v flutter &> /dev/null; then' >> /home/claude/.bash_profile && \
     echo '            echo ""' >> /home/claude/.bash_profile && \
     echo '            echo "📱 Flutter Development"' >> /home/claude/.bash_profile && \
     echo '            echo "==========================="' >> /home/claude/.bash_profile && \
@@ -292,7 +295,10 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '        fi' >> /home/claude/.bash_profile && \
     echo '' >> /home/claude/.bash_profile && \
     echo '        # Check and offer Rust installation' >> /home/claude/.bash_profile && \
-    echo '        if ! command -v cargo &> /dev/null; then' >> /home/claude/.bash_profile && \
+    echo '        # Check directory existence instead of command (more reliable for persistent storage)' >> /home/claude/.bash_profile && \
+    echo '        if [ -d ~/.cargo ]; then' >> /home/claude/.bash_profile && \
+    echo '            echo "✅ Rust already installed (persistent in ~/.cargo)"' >> /home/claude/.bash_profile && \
+    echo '        elif ! command -v cargo &> /dev/null; then' >> /home/claude/.bash_profile && \
     echo '            echo ""' >> /home/claude/.bash_profile && \
     echo '            echo "🦀 Rust Development"' >> /home/claude/.bash_profile && \
     echo '            echo "====================="' >> /home/claude/.bash_profile && \
@@ -318,6 +324,7 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '        fi' >> /home/claude/.bash_profile && \
     echo '' >> /home/claude/.bash_profile && \
     echo '        # Check and offer Java/Kotlin installation' >> /home/claude/.bash_profile && \
+    echo '        # Java is installed in Docker image layer (system directory)' >> /home/claude/.bash_profile && \
     echo '        if ! command -v java &> /dev/null; then' >> /home/claude/.bash_profile && \
     echo '            echo ""' >> /home/claude/.bash_profile && \
     echo '            echo "☕ Java/Kotlin Development"' >> /home/claude/.bash_profile && \
@@ -344,6 +351,7 @@ RUN echo '#!/bin/bash' > /home/claude/.bash_profile && \
     echo '        fi' >> /home/claude/.bash_profile && \
     echo '        echo ""' >> /home/claude/.bash_profile && \
     echo '        # Check and offer Docker CLI installation' >> /home/claude/.bash_profile && \
+    echo '        # Docker CLI is installed in /usr/local/bin (system directory)' >> /home/claude/.bash_profile && \
     echo '        if ! command -v docker &> /dev/null; then' >> /home/claude/.bash_profile && \
     echo '            echo ""' >> /home/claude/.bash_profile && \
     echo '            echo "🐳 Docker CLI Not Installed"' >> /home/claude/.bash_profile && \
