@@ -24,128 +24,13 @@ Docker container berbasis Ubuntu 24.04 LTS (2026) untuk menjalankan Claude Code 
 
 ## Persyaratan
 
-- Docker (version 24.0+ atau Docker Desktop terbaru)
+- Docker (version 24.0+)
 - Docker Compose (version 2.0+)
 - Minimal 4GB RAM yang tersedia untuk Docker (8GB+ recommended)
 - Koneksi internet untuk download dependencies dan Claude Code authentication
 - Supported OS: Linux, macOS, atau Windows dengan WSL2
 
-### macOS Users: Gunakan Colima (Recommended)
-
-Untuk pengguna macOS, sangat disarankan menggunakan **Colima** instead of Docker Desktop. Colima lebih ringan, open-source, dan support `network_mode: host` yang dibutuhkan container ini.
-
-**Kenapa Colima?**
-- ✅ Support `network_mode: host` (Docker Desktop tidak fully support)
-- ✅ Lebih ringan dan hemat resources (CPU/memory)
-- ✅ Open-source dan gratis
-- ✅ Better performance untuk development
-- ✅ Integration seamless dengan Docker CLI
-- ✅ Support VirtioFS untuk file sharing performance
-- ✅ Docker CLI access via TCP (tanpa socket mount - lebih clean!)
-
-**Install Colima:**
-```bash
-# Install via Homebrew
-brew install colima docker docker-compose
-```
-
-**Start Colima dengan Docker Daemon Exposed:**
-
-⚡ **PENTING:** Container ini menggunakan Docker CLI untuk manage containers di host. Agar Docker CLI di dalam container bisa connect ke host Docker daemon, Colima harus di-start dengan Docker daemon exposed via TCP:
-
-```bash
-# Start Colima dengan Docker daemon exposed
-colima start \
-  --vm-type=vz \
-  --vz-rosetta \
-  --network host \
-  --cpu 4 \
-  --memory 8 \
-  --engine-flags="--host=tcp://0.0.0.0:2375"
-
-# Verify Docker daemon exposed
-lsof -i :2375  # Should show docker-a listening
-
-# Test koneksi
-docker -H tcp://localhost:2375 ps
-```
-
-**📖 Setup Lengkap:** Lihat [COLIMA-SETUP.md](COLIMA-SETUP.md) untuk guide lengkap dan troubleshooting!
-
-**Colima Commands:**
-```bash
-# Start Colima
-colima start
-
-# Stop Colima
-colima stop
-
-# Restart Colima
-colima restart
-
-# Check status
-colima status
-
-# Delete Colima (hapus VM)
-colima delete
-
-# SSH ke Colima VM
-colima ssh
-```
-
-**Configuration Tips:**
-```bash
-# Start dengan resources yang lebih besar
-colima start --network host --cpu 6 --memory 12 --disk 100
-
-# Edit config (vi editor)
-colima default edit
-
-# Set auto-start on login
-colima default edit --runtime docker
-# Tambahkan: auto_start: true
-```
-
-**Docker Desktop vs Colima:**
-| Feature | Docker Desktop | Colima |
-|---------|---------------|---------|
-| `network_mode: host` | ❌ Limited support | ✅ Full support |
-| Docker CLI Access | Socket mount | DOCKER_HOST (cleaner) ✅ |
-| Resource Usage | High | Medium |
-| Performance | Medium | High |
-| Price | Paid (for teams) | Free |
-| Open Source | ❌ | ✅ |
-| Kubernetes | Built-in | Optional |
-| File Sharing | Good | Excellent (VirtioFS) |
-
-⚠️ **PENTING untuk macOS:**
-- Jika menggunakan Docker Desktop, `network_mode: host` mungkin tidak bekerja dengan baik
-- Sangat disarankan uninstall Docker Desktop sebelum install Colima
-- Atau disable Docker Desktop saat menggunakan Colima
-- **Docker daemon harus di-expose via TCP** agar Docker CLI di dalam container bisa connect
-
-**Migration dari Docker Desktop ke Colima:**
-```bash
-# 1. Stop dan quit Docker Desktop
-# 2. Install Colima
-brew install colima docker docker-compose
-
-# 3. Start Colima dengan Docker daemon exposed
-colima start --network host --cpu 4 --memory 8 --engine-flags="--host=tcp://0.0.0.0:2375"
-
-# 4. Test Docker integration
-docker run hello-world
-
-# 5. Test Docker daemon via TCP
-docker -H tcp://localhost:2375 ps
-
-# 6. Jalankan container ini
-docker-compose up -d --build
-
-# 7. Verify Docker CLI bekerja di dalam container
-docker exec -it claude-code-container bash
-docker ps  # Should list host containers!
-```
+**Note:** Container menggunakan `network_mode: host` yang membutuhkan Docker daemon dengan dukungan host networking. Pastikan Docker environment kamu mendukung mode ini.
 
 ## Apa yang Baru di 2026
 
@@ -598,42 +483,12 @@ cd /workspace/app3 && python app.py  # → http://localhost:5000
 
 ## Docker CLI Integration
 
-Container dilengkapi dengan **Docker CLI** untuk manage containers di host/VPS:
+Container dilengkapi dengan **Docker CLI** untuk manage containers di host:
 
 **Fitur:**
-- ✅ Docker client terinstall (Docker version 24.0+)
-- ✅ Connect ke host Docker daemon via **DOCKER_HOST** (clean approach!)
-- ✅ Tidak perlu socket mount - lebih secure dan mengikuti best practices
+- ✅ Docker client terinstall
+- ✅ Connect ke host Docker daemon via **DOCKER_HOST**
 - ✅ Bisa manage semua containers/images di host dari dalam container
-- ✅ Perfect untuk deployment workflows
-
-**Setup untuk Colima (macOS):**
-```bash
-# Start Colima dengan Docker daemon exposed
-colima start --network host --engine-flags="--host=tcp://0.0.0.0:2375"
-
-# Verify
-docker -H tcp://localhost:2375 ps
-
-# Container otomatis connect via DOCKER_HOST environment variable
-docker-compose up -d --build
-```
-
-**Setup untuk Linux:**
-```bash
-# Expose Docker daemon via TCP
-sudo systemctl edit docker
-# Add:
-# [Service]
-# ExecStart=
-# ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2375
-
-# Restart Docker
-sudo systemctl restart docker
-
-# Verify
-docker -H tcp://localhost:2375 ps
-```
 
 **Contoh Penggunaan:**
 ```bash
@@ -643,36 +498,17 @@ docker exec -it claude-code-container bash
 # List semua containers di host
 docker ps
 
-# List semua images di host
-docker images
-
 # Build image dari dalam container
 docker build -t myapp:latest /workspace/myapp
 
 # Run container baru di host
 docker run -d --name myapp myapp:latest
-
-# Check logs container lain
-docker logs some-container
-
-# Stop/start container lain
-docker stop some-container
-docker start some-container
 ```
 
-**Use Cases:**
-1. **Build & Deploy** - Build Docker image dari dalam container, lalu deploy ke host
-2. **Container Orchestration** - Manage multiple containers untuk microservices
-3. **CI/CD Pipelines** - Automated build dan deployment
-4. **Development Testing** - Test integration antar containers
-
 **Catatan:**
-- Container connect ke host Docker daemon via `DOCKER_HOST=tcp://localhost:2375`
-- Lebih clean daripada socket mount (tidak perlu volume mount)
-- Gunakan dengan hati-hati - punya akses ke semua containers di host
-- Pastikan Docker daemon hanya accessible dari localhost (security best practice)
-
-**📖 Setup Lengkap:** Lihat [COLIMA-SETUP.md](COLIMA-SETUP.md) untuk guide lengkap Colima setup!
+- Container connect via `DOCKER_HOST=tcp://localhost:2375`
+- Pastikan Docker daemon di host accessible via TCP
+- Lihat arsip `[docs/archive/DOCKER_DAEMON_SETUP.md](docs/archive/DOCKER_DAEMON_SETUP.md)` untuk setup lengkap
 
 ## Security Notes
 
@@ -823,19 +659,14 @@ docker ps  # Should list host containers
   ```
 - Lalu update docker-compose.yml untuk menggunakan image tersebut
 
-## Known Issues & Fixes
+## Additional Documentation
 
-Documentation for known issues and their fixes:
+Untuk dokumentasi tambahan dan troubleshooting, lihat:
 
-### Installation & Configuration Issues
-- **[PATH Corruption Fix](PATH_CORRUPTION_FIX.md)** - Fix for "command not found" errors after installing Flutter, Rust, or Java
-- **[Flutter Config Permission Fix](FLUTTER_CONFIG_FIX.md)** - Fix for Flutter `.config/flutter` directory permission errors
-
-### Docker Daemon Setup
-- **[Docker Daemon TCP Setup](DOCKER_DAEMON_SETUP.md)** - Configure Docker daemon for container access (Linux/VPS)
-
-### Deployment Guides
-- **[VPS Deployment Guide](VPS-DEPLOYMENT-GUIDE.md)** - Complete guide for deploying to VPS (prerequisites, setup, security)
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick start guide
+- **[SAFETY-GUIDE.md](SAFETY-GUIDE.md)** - Security guidelines
+- **[STATUS.md](STATUS.md)** - Project status
+- **[docs/archive/](docs/archive/)** - Arsip dokumentasi setup & troubleshooting lama
 
 ## Resources
 
