@@ -23,6 +23,15 @@ services:
         /usr/local/bin/claude-entrypoint.sh &
         # Wait a moment for entrypoint to initialize
         sleep 3
+        # Create dev user if not exists
+        if ! grep "^dev:" /etc/passwd > /dev/null; then
+          # Create without -m flag because home dir already exists from mount
+          sudo useradd -u 1002 -s /bin/bash -d /home/dev dev
+          echo "✅ User dev created (UID 1002)"
+        else
+          # Fix dev user shell
+          sudo usermod -s /bin/bash dev 2>/dev/null || true
+        fi
         # Start SSH server
         /usr/local/bin/start-sshd.sh
         # Keep container running
