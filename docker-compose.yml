@@ -27,10 +27,17 @@ services:
         if ! grep "^dev:" /etc/passwd > /dev/null; then
           # Create without -m flag because home dir already exists from mount
           sudo useradd -u 1002 -s /bin/bash -d /home/dev dev
-          echo "✅ User dev created (UID 1002)"
+          # Set permanent password
+          echo "dev:dev123" | sudo chpasswd
+          echo "✅ User dev created (UID 1002) with password"
         else
           # Fix dev user shell
           sudo usermod -s /bin/bash dev 2>/dev/null || true
+          # Ensure password is set (only if password is locked/empty)
+          if sudo passwd -S dev | grep -q " L "; then
+            echo "dev:dev123" | sudo chpasswd
+            echo "✅ Dev user password set"
+          fi
         fi
         # Start SSH server
         /usr/local/bin/start-sshd.sh
