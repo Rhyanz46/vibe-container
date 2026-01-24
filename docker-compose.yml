@@ -69,6 +69,10 @@ services:
       # SSH keys persistent storage
       - ./data/.ssh:/home/claude/.ssh
 
+      # ===== MULTI-USER SUPPORT =====
+      # Additional user home directories (persistent)
+      - ./data/home/dev:/home/dev
+
       # ===== SSH SERVER CONFIG =====
       # SSH server configuration (persistent)
       - ./config/ssh/etc-ssh/sshd_config:/etc/ssh/sshd_config
