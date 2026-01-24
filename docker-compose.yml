@@ -45,18 +45,12 @@ services:
       # MCP (Model Context Protocol) server configurations
       - ./data/.mcp:/home/claude/.mcp
 
-      # npm cache for Node.js packages
-      - ./data/.npm:/home/claude/.npm
-
       # NVM (Node Version Manager) for globally installed npm packages
       - ./data/.nvm:/home/claude/.nvm
 
       # ===== GO DEVELOPMENT DATA =====
       # Go workspace and packages
       - ./data/go:/home/claude/go
-
-      # Go module cache (for faster builds)
-      - ./data/.cache/go-build:/home/claude/.cache/go-build
 
       # ===== SSH FOR GIT OPERATIONS =====
       # SSH keys persistent storage
