@@ -43,34 +43,9 @@ services:
       # X11 authority file (optional - uncomment if you get X11 authentication errors)
       # - ${HOME}/.Xauthority:/home/claude/.Xauthority:ro
 
-      # ===== CLAUDE CODE DATA IN CURRENT DIRECTORY =====
-      # All data stored in subdirectories next to docker-compose.yml
-
-      # Main Claude Code configuration (includes API keys, settings)
-      - ./data/.claude:/home/claude/.claude
-
-      # Claude Code data cache (models, conversations, etc)
-      - ./data/.local/share/claude:/home/claude/.local/share/claude
-
-      # Claude Code binary and local files
-      - ./data/.local:/home/claude/.local
-
-      # MCP (Model Context Protocol) server configurations
-      - ./data/.mcp:/home/claude/.mcp
-
-      # NVM (Node Version Manager) for globally installed npm packages
-      - ./data/.nvm:/home/claude/.nvm
-
-      # ===== GO DEVELOPMENT DATA =====
-      # Go workspace and packages
-      - ./data/go:/home/claude/go
-
-      # ===== SSH FOR GIT OPERATIONS =====
-      # SSH keys persistent storage
-      - ./data/.ssh:/home/claude/.ssh
-
-      # ===== MULTI-USER SUPPORT =====
-      # Additional user home directories (persistent)
+      # ===== USER HOME DIRECTORIES =====
+      # Full home directory mounts for complete persistence
+      - ./data/home/claude:/home/claude
       - ./data/home/dev:/home/dev
 
       # ===== SSH SERVER CONFIG =====
@@ -78,37 +53,6 @@ services:
       - ./config/ssh/etc-ssh/sshd_config:/etc/ssh/sshd_config
       # SSH server auto-start script
       - ./scripts/ssh/start-sshd.sh:/usr/local/bin/start-sshd.sh
-
-      # ===== FLUTTER DEVELOPMENT DATA =====
-      # Flutter SDK and Dart SDK
-      - ./data/flutter:/home/claude/flutter
-
-      # ===== RUST DEVELOPMENT DATA =====
-      # Cargo package manager and crates
-      - ./data/.cargo:/home/claude/.cargo
-      # Rustup toolchain installer
-      - ./data/.rustup:/home/claude/.rustup
-
-      # ===== KOTLIN DEVELOPMENT DATA =====
-      # Kotlin compiler and SDK
-      - ./data/.kotlin:/home/claude/.kotlin
-
-      # ===== OPTIONAL TOOLS (Persistent) =====
-      # Java OpenJDK (optional, keeps image small)
-      - ./data/.java:/home/claude/.java
-      # Docker CLI (optional, keeps image small)
-      - ./data/.docker:/home/claude/.docker
-
-      # ===== PLAYWRIGHT DATA =====
-      # Playwright browsers (Chromium, Firefox, WebKit)
-      - ./data/.cache/ms-playwright:/home/claude/.cache/ms-playwright
-
-      # ===== WORKSPACE DIRECTORY =====
-      # Persistent workspace for development projects
-      # Using cached mode for better read performance (50-80% faster file operations)
-      - ./data/workspace:/home/claude/workspace:cached
-      - ./data/.npm:/home/claude/.npm:cached
-      - ./data/.cache/go-build:/home/claude/.cache/go-build:cached
 
       # Optional: Mount git config from host
       # Uncomment to use your host's git configuration
@@ -123,7 +67,6 @@ services:
     # This reduces disk I/O and improves performance for cache-heavy operations
     tmpfs:
       - /tmp:rw,size=512m
-      - /home/claude/.cache:rw,size=1g,mode=1777
       - /run/sshd:rw,size=10m,mode=0755
 
     # Working directory inside container
