@@ -14,6 +14,19 @@ services:
     image: claude-code:2026.1
     # Use restart policy for better resilience
     restart: unless-stopped
+    # Auto-start SSH server after container starts
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        # Run original entrypoint in background
+        /usr/local/bin/claude-entrypoint.sh &
+        # Wait a moment for entrypoint to initialize
+        sleep 3
+        # Start SSH server
+        /usr/local/bin/start-sshd.sh
+        # Keep container running
+        tail -f /dev/null
 
     # ===== SECURITY: Run as non-root user =====
     # Container runs as 'claude' user (UID 1001) instead of root
@@ -55,6 +68,12 @@ services:
       # ===== SSH FOR GIT OPERATIONS =====
       # SSH keys persistent storage
       - ./data/.ssh:/home/claude/.ssh
+
+      # ===== SSH SERVER CONFIG =====
+      # SSH server configuration (persistent)
+      - ./config/ssh/etc-ssh/sshd_config:/etc/ssh/sshd_config
+      # SSH server auto-start script
+      - ./scripts/ssh/start-sshd.sh:/usr/local/bin/start-sshd.sh
 
       # ===== FLUTTER DEVELOPMENT DATA =====
       # Flutter SDK and Dart SDK
@@ -101,6 +120,7 @@ services:
     tmpfs:
       - /tmp:rw,size=512m
       - /home/claude/.cache:rw,size=1g,mode=1777
+      - /run/sshd:rw,size=10m,mode=0755
 
     # Working directory inside container
     working_dir: /home/claude/workspace
