@@ -29,7 +29,9 @@ services:
           sudo useradd -u 1002 -s /bin/bash -d /home/dev dev
           # Set permanent password
           echo "dev:dev123" | sudo chpasswd
-          echo "✅ User dev created (UID 1002) with password"
+          # Add to sudo group for permanent sudo access
+          sudo usermod -aG sudo dev
+          echo "✅ User dev created (UID 1002) with password and sudo access"
         else
           # Fix dev user shell
           sudo usermod -s /bin/bash dev 2>/dev/null || true
@@ -37,6 +39,11 @@ services:
           if sudo passwd -S dev | grep -q " L "; then
             echo "dev:dev123" | sudo chpasswd
             echo "✅ Dev user password set"
+          fi
+          # Ensure dev user is in sudo group
+          if ! groups dev | grep -q "\bsudo\b"; then
+            sudo usermod -aG sudo dev
+            echo "✅ Dev user added to sudo group"
           fi
         fi
         # Start SSH server
