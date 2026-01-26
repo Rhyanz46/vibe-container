@@ -71,6 +71,10 @@ services:
       - ./data/home/claude:/home/claude
       - ./data/home/dev:/home/dev
 
+      # ===== HOST WEB DIRECTORIES =====
+      # Mount host web directories for development
+      - /var/www/html:/var/www/html:rw
+
       # ===== SSH SERVER CONFIG =====
       # SSH server configuration (persistent)
       - ./config/ssh/etc-ssh/sshd_config:/etc/ssh/sshd_config
