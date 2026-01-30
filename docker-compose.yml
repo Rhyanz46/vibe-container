@@ -14,47 +14,60 @@ services:
     image: claude-code:2026.1
     # Use restart policy for better resilience
     restart: unless-stopped
-    # Auto-start SSH server after container starts
+    # Use supervisor to manage processes
     entrypoint:
       - /bin/bash
       - -c
       - |
-        # Run original entrypoint in background
-        /usr/local/bin/claude-entrypoint.sh &
-        # Wait a moment for entrypoint to initialize
-        sleep 3
+        # Add claude user to www-data group for web directory access
+        if ! groups claude | grep -q "\bwww-data\b"; then
+          usermod -aG www-data claude
+          echo "✅ User claude added to www-data group"
+        fi
+
+        # Setup sudoers for dev user (NOPASSWD)
+        if [ ! -f /etc/sudoers.d/dev ]; then
+          echo "dev ALL=(ALL) NOPASSWD:ALL" > /tmp/dev-sudoers
+          chmod 440 /tmp/dev-sudoers
+          chown root:root /tmp/dev-sudoers
+          mv /tmp/dev-sudoers /etc/sudoers.d/dev
+          echo "✅ Dev user sudo NOPASSWD configured"
+        fi
+
         # Create dev user if not exists
         if ! grep "^dev:" /etc/passwd > /dev/null; then
           # Create without -m flag because home dir already exists from mount
-          sudo useradd -u 1002 -s /bin/bash -d /home/dev dev
+          useradd -u 1002 -s /bin/bash -d /home/dev dev
           # Set permanent password
-          echo "dev:dev123" | sudo chpasswd
+          echo "dev:dev123" | chpasswd
           # Add to sudo group for permanent sudo access
-          sudo usermod -aG sudo dev
-          echo "✅ User dev created (UID 1002) with password and sudo access"
+          usermod -aG sudo dev
+          # Add to www-data group for web directory access
+          usermod -aG www-data dev
+          echo "✅ User dev created (UID 1002) with password, sudo NOPASSWD, and www-data access"
         else
           # Fix dev user shell
-          sudo usermod -s /bin/bash dev 2>/dev/null || true
+          usermod -s /bin/bash dev 2>/dev/null || true
           # Ensure password is set (only if password is locked/empty)
-          if sudo passwd -S dev | grep -q " L "; then
-            echo "dev:dev123" | sudo chpasswd
+          if passwd -S dev | grep -q " L "; then
+            echo "dev:dev123" | chpasswd
             echo "✅ Dev user password set"
           fi
           # Ensure dev user is in sudo group
           if ! groups dev | grep -q "\bsudo\b"; then
-            sudo usermod -aG sudo dev
+            usermod -aG sudo dev
             echo "✅ Dev user added to sudo group"
           fi
+          # Ensure dev user is in www-data group
+          if ! groups dev | grep -q "\bwww-data\b"; then
+            usermod -aG www-data dev
+            echo "✅ Dev user added to www-data group"
+          fi
         fi
-        # Start SSH server
-        /usr/local/bin/start-sshd.sh
-        # Keep container running
-        tail -f /dev/null
 
-    # ===== SECURITY: Run as non-root user =====
-    # Container runs as 'claude' user (UID 1001) instead of root
-    # This improves security by following the principle of least privilege
-    user: "1001:1001"
+        # Start supervisord to manage all processes
+        echo "🚀 Starting supervisor..."
+        exec /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 
     # Mount volumes for persistent data
     volumes:
@@ -80,6 +93,12 @@ services:
       - ./config/ssh/etc-ssh/sshd_config:/etc/ssh/sshd_config
       # SSH server auto-start script
       - ./scripts/ssh/start-sshd.sh:/usr/local/bin/start-sshd.sh
+
+      # ===== SUPERVISOR CONFIG =====
+      # Supervisor main configuration
+      - ./config/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf
+      # Supervisor program configurations
+      - ./config/supervisor/conf.d:/etc/supervisor/conf.d
 
       # Optional: Mount git config from host
       # Uncomment to use your host's git configuration

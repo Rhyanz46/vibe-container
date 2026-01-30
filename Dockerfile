@@ -23,6 +23,8 @@ RUN apt-get update && apt-get install -y \
     jq \
     unzip \
     sudo \
+    supervisor \
+    openssh-server \
     bash-completion \
     command-not-found \
     git-core \
@@ -30,7 +32,6 @@ RUN apt-get update && apt-get install -y \
     less \
     xz-utils \
     libssl-dev \
-    nginx \
     # Playwright/browser dependencies
     libnss3 \
     libnspr4 \
@@ -196,7 +197,6 @@ RUN echo '# Source global definitions' >> /home/claude/.bashrc && \
     echo 'echo "pip: $(python3 -m pip --version 2>/dev/null)"' >> /home/claude/.bashrc && \
     echo 'echo "Available: $(nvm version 2>/dev/null | tr " " "\\n" | grep -v "N/A" | sort -u | tr "\\n" " ")"' >> /home/claude/.bashrc && \
     echo 'echo "npm: $(npm --version 2>/dev/null)"' >> /home/claude/.bashrc && \
-    echo 'echo "nginx: $(nginx -v 2>&1 || echo \"installed\")"' >> /home/claude/.bashrc && \
     echo 'echo "Playwright: $(npx playwright --version 2>/dev/null || echo \"installed\")"' >> /home/claude/.bashrc && \
     echo 'echo "Playwright MCP: $(npm list -g playwright-mcp 2>/dev/null | grep playwright-mcp | awk '"'"'{print $2}'"'"' || echo \"installed\")"' >> /home/claude/.bashrc && \
     echo 'echo "==============================="' >> /home/claude/.bashrc && \
