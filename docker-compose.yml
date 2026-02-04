@@ -65,6 +65,13 @@ services:
           fi
         fi
 
+        # Install Docker CLI to system-wide (persistent across rebuilds)
+        if [ ! -f /usr/local/bin/docker ]; then
+          cp /home/claude/.docker/docker /usr/local/bin/docker
+          chmod +x /usr/local/bin/docker
+          echo "✅ Docker CLI installed to /usr/local/bin"
+        fi
+
         # Start supervisord to manage all processes
         echo "🚀 Starting supervisor..."
         exec /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
