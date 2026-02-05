@@ -27,6 +27,7 @@ else
 fi
 
 # Check if first argument is a username (claude or dev)
+# Or if using "su - username" format
 if [ "$1" = "claude" ] || [ "$1" = "dev" ]; then
     TARGET_USER="$1"
     shift  # Remove username from arguments
@@ -42,6 +43,14 @@ if [ "$1" = "claude" ] || [ "$1" = "dev" ]; then
         # Run command as user
         docker exec ${INTERACTIVE_FLAG} -u "${TARGET_USER}" "${CONTAINER_NAME}" bash -l -c "$@"
     fi
+elif [ "$1" = "su" ] && [ "$2" = "-" ] && ([ "$3" = "claude" ] || [ "$3" = "dev" ]); then
+    # Handle "su - claude" or "su - dev" format
+    TARGET_USER="$3"
+    if [ -t 0 ]; then
+        echo "🚀 Entering Claude Code container as '${TARGET_USER}'..."
+        echo ""
+    fi
+    docker exec ${INTERACTIVE_FLAG} -u "${TARGET_USER}" "${CONTAINER_NAME}" bash -l
 else
     # No username specified - use default behavior
     # If no arguments, start interactive bash (login shell to load .bashrc)
