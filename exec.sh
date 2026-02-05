@@ -24,14 +24,14 @@ else
     INTERACTIVE_FLAG=""
 fi
 
-# If no arguments, start interactive bash
+# If no arguments, start interactive bash (login shell to load .bashrc)
 if [ $# -eq 0 ]; then
     if [ -t 0 ]; then
         echo "🚀 Entering Claude Code container..."
         echo ""
     fi
-    docker exec ${INTERACTIVE_FLAG} "${CONTAINER_NAME}" bash
+    docker exec ${INTERACTIVE_FLAG} "${CONTAINER_NAME}" bash -l
 else
-    # Run the provided command
-    docker exec ${INTERACTIVE_FLAG} "${CONTAINER_NAME}" "$@"
+    # Run the provided command (as login shell to load .bashrc)
+    docker exec ${INTERACTIVE_FLAG} "${CONTAINER_NAME}" bash -l -c "$@"
 fi
