@@ -40,6 +40,15 @@ fi
 
 print_status "Using: $COMPOSE_CMD"
 
+# Step 0: Pull latest changes from git
+echo ""
+echo "📥 Step 0: Pulling latest changes from git..."
+if git pull; then
+    print_status "Git pull completed"
+else
+    print_warning "Git pull failed or not a git repository"
+fi
+
 # Step 1: Stop and remove existing container
 echo ""
 echo "📦 Step 1: Stopping existing container..."
