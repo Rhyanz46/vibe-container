@@ -40,6 +40,21 @@ fi
 
 print_status "Using: $COMPOSE_CMD"
 
+# Step -1: Ensure .bashrc files exist for users
+if [ ! -f "data/home/claude/.bashrc" ] && [ -f "templates/bashrc-claude" ]; then
+    echo ""
+    echo "📝 Setting up .bashrc for claude user..."
+    cp templates/bashrc-claude data/home/claude/.bashrc
+    print_status ".bashrc created for claude"
+fi
+
+if [ ! -f "data/home/dev/.bashrc" ] && [ -f "templates/bashrc-dev" ]; then
+    echo ""
+    echo "📝 Setting up .bashrc for dev user..."
+    cp templates/bashrc-dev data/home/dev/.bashrc
+    print_status ".bashrc created for dev"
+fi
+
 # Step 0: Pull latest changes from git
 echo ""
 echo "📥 Step 0: Pulling latest changes from git..."
